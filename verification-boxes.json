@@ -1,0 +1,7 @@
+{
+  "tsx_syntax": "passed",
+  "standalone_link_targets": "passed",
+  "asset_paths": "passed",
+  "browser_render": "blocked by administrator; no pixel comparison performed",
+  "react_build": "not tested"
+}

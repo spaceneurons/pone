@@ -1,0 +1,17 @@
+{
+  "viewport_width": 720,
+  "render_size": [
+    720,
+    4517
+  ],
+  "original_svg_vs_preview_different_pixels_percent": 0.0,
+  "original_svg_vs_preview_mean_absolute_rgb_difference": 0.0,
+  "figma_png_reference_size": [
+    326,
+    2048
+  ],
+  "figma_png_mean_absolute_rgb_difference": 4.346856427338957,
+  "local_assets_verified": 24,
+  "page_errors": [],
+  "limitations": "The browser blocks local URL navigation, so verification injected actual extracted image bytes into the preview markup. Network fonts unavailable; both browser renders used the same fallback fonts. TSX syntax verified, npm install and Vite build not executed."
+}
