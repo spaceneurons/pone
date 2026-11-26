@@ -1,0 +1,14 @@
+/* Fixed desktop navigation; the mobile header keeps its existing sticky behavior. */
+.sticky-desktop-header { display: none; }
+@media (min-width: 761px) {
+  .sticky-desktop-header {
+    display: block; position: fixed; inset: 0 0 auto; z-index: 900;
+    width: 100%; line-height: 0; background: #fff;
+    box-shadow: 0 3px 14px rgba(0,0,0,.08);
+  }
+  .sticky-desktop-header svg {
+    display: block; width: 100%; height: auto; aspect-ratio: 1440 / 74; overflow: visible;
+  }
+}
+@media (max-width: 760px) { .sticky-desktop-header { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { .sticky-desktop-header { scroll-behavior: auto; } }
