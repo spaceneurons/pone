@@ -92,7 +92,7 @@ if(page==='home'){
  if(page==='constructor'){const jump=el('div','m-jump');jump.append(btn('↑  Начало меню',()=>window.scrollTo({top:0,behavior:'smooth'}),'m-jump-btn'),btn('↓  Конец меню',()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),'m-jump-btn'));root.append(jump)}
  root.append(makeFormSection());
 }else if(page==='product'){
- const productId=new URLSearchParams(location.search).get('id')||'festive';const p=P[productId]||P.festive||boxes.find(x=>x.id==='fish');const title=section();title.append(el('h1','',p.name));root.append(title,makeProductSection(p),makeSlider('С этим товаром также покупают',boxes.filter(x=>x.id!==p.id).slice(0,6)));
+ const productId=new URLSearchParams(location.search).get('id')||'festive';const source=P[productId]||P.festive;const p={id:productId,...source};const title=section();title.append(el('h1','',p.name));root.append(title,makeProductSection(p),makeSlider('С этим товаром также покупают',boxes.filter(x=>x.id!==p.id).slice(0,6)));
 }
 makeFooter();document.querySelector('.page')?.append(root);
 const mq=window.matchMedia('(max-width: 760px)');
