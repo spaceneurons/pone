@@ -7,7 +7,35 @@ const S=(tag,attrs={})=>{const el=document.createElementNS(NS,tag);for(const [k,
 const H=(tag,attrs={},text)=>{const el=document.createElement(tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);if(text!=null)el.textContent=text;return el};
 const tspan=t=>t.querySelector('tspan')||t;
 const val=t=>t.textContent.trim();
-const textAll=()=>$$('text',svg);
+const textAll=()=>$('text',svg);
+const productPageId=page==='product'?(new URLSearchParams(location.search).get('id')||'festive'):'';
+if(page==='product'){
+ const selected=P[productPageId]&&P[productPageId].kind==='Фудбоксы'?P[productPageId]:P.festive;
+ const selectedId=selected===P[productPageId]?productPageId:'festive';
+ const productCard=$('[data-card]',svg);
+ if(productCard){
+  productCard.dataset.card=selectedId;productCard.dataset.tag=selected.tag||'';
+  const title=$('text',productCard).find(t=>t.textContent.includes('Бокс Праздничный'));
+  if(title)tspan(title).textContent=selected.name;
+  const price=$('text',productCard).find(t=>t.textContent.includes('200 Br'));
+  if(price)tspan(price).textContent=money(selected.price);
+  const qty=$('[data-control="qty"]',productCard);if(qty)tspan(qty).textContent=String(selected.min||1);
+  const weight=$('text',productCard).find(t=>/^\\s*850\\s*г\\s*$/.test(t.textContent));
+  const specs=$('text',productCard).find(t=>t.textContent.includes('Вес:')&&t.textContent.includes('Упаковка:'));
+  const nutrition=$('text',productCard).find(t=>t.textContent.includes('КБЖУ:'));
+  const composition=$('text',productCard).find(t=>t.textContent.includes('Канапе с ветчиной'));
+  if(selectedId!=='festive'){
+   if(weight)weight.style.display='none';
+   if(specs)specs.style.display='none';
+   if(nutrition)nutrition.style.display='none';
+   if(composition){composition.replaceChildren();const line=S('tspan',{x:'859',y:'628.32'});line.textContent='Состав уточняйте у менеджера';composition.append(line)}
+  }
+  const photo=$('#image0_238_949',svg);
+  if(photo){photo.dataset.src=selected.image;photo.removeAttribute('href');photo.removeAttributeNS('http://www.w3.org/1999/xlink','href')}
+ }
+ document.title='Вкусный След — '+selected.name;
+}
+
 const findText=(s,p=svg)=>$$('text',p).find(t=>val(t)===s);
 const xy=t=>[+tspan(t).getAttribute('x'),+tspan(t).getAttribute('y')];
 function action(el,fn,label){el.classList.add('click-target');el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label',label);el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();fn(e)});el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});return el}
@@ -27,7 +55,7 @@ function setQty(id,n){qtyById[id]=Math.max(P[id].min,Math.min(999,n));for(const 
 for(const g of cards){const id=g.dataset.card,p=P[id];if(!p)continue;qtyById[id]=p.min;g.setAttribute('aria-label',p.name);const plus=$('[data-control="plus"]',g),minus=$('[data-control="minus"]',g),addRect=$('[data-control="add"]',g);
  for(const [el,d,l] of [[plus,1,'Увеличить'],[minus,-1,'Уменьшить']])if(el){const [x,y]=xy(el);hit(g,x-10,y-29,37,40,()=>setQty(id,qtyById[id]+d),`${l}: ${p.name}`)}
  if(addRect){const x=+addRect.getAttribute('x'),y=+addRect.getAttribute('y'),w=+addRect.getAttribute('width');hit(g,x,y,w,w,()=>add(id,qtyById[id]),`В корзину: ${p.name}`)}
- if(page==='boxes'&&id==='fish'){hit(g,+g.dataset.x,+g.dataset.y,+g.dataset.w,329,()=>location.href='product.html','Открыть Бокс Праздничный')}
+ 
 }
 // Cart drawer and order submission.
 const shade=H('div',{class:'cart-shade',hidden:''});const drawer=H('aside',{class:'cart-drawer',role:'dialog','aria-modal':'true','aria-label':'Корзина'});shade.append(drawer);document.body.append(shade);let cartOpen=false,checkout=false,submitting=false,lastFocus=null;
@@ -164,6 +192,15 @@ function showProductModal(id){
  requestAnimationFrame(()=>cartButton.focus());
 }
 document.addEventListener('keydown',e=>{if(!productModalShade.hidden&&e.key==='Escape')closeProductModal()});
+if(page==='boxes'){
+ svg.addEventListener('click',e=>{
+  const target=e.target,card=target.closest?.('[data-card]');if(!card||!P[card.dataset.card])return;
+  const hit=target.closest?.('.hit');
+  if(hit&&/^(Увеличить|Уменьшить|В корзину)/.test(hit.getAttribute('aria-label')||''))return;
+  e.preventDefault();e.stopPropagation();
+  location.href='product.html?id='+encodeURIComponent(card.dataset.card);
+ },true);
+}
 if(page==='constructor'){
  // Capture product-card clicks before SVG child hit areas can swallow them.
  svg.addEventListener('click',e=>{

@@ -39,7 +39,7 @@ const card=(p,mode='food')=>{
  const plus=btn('+',()=>{let n=Number(q.textContent);q.textContent=String(Math.min(999,n+1))},'m-qty-btn');
  const add=btn('В корзину',()=>UI.add(p.id,Number(q.textContent)),'m-add');
  controls.append(minus,q,plus,add);body.append(controls);c.append(im,body);if(page==='constructor'&&mode==='food'){c.setAttribute('role','button');c.setAttribute('tabindex','0');c.setAttribute('aria-label','Подробнее: '+p.name);c.addEventListener('keydown',e=>{if(e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();UI.showProductModal(p.id)}});}
- if(mode==='box'&&p.id==='fish'){c.classList.add('m-card-link');c.addEventListener('click',e=>{if(!e.target.closest('button'))location.href='product.html'})}
+ if(mode==='box'){c.classList.add('m-card-link');c.addEventListener('click',e=>{if(!e.target.closest('button'))location.href='product.html?id='+encodeURIComponent(p.id)})}
  return c;
 };
 const grid=(items,mode)=>{const g=el('div','m-grid');items.forEach(p=>g.append(card(p,mode)));return g};
