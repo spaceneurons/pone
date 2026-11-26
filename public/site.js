@@ -165,6 +165,14 @@ function showProductModal(id){
 }
 document.addEventListener('keydown',e=>{if(!productModalShade.hidden&&e.key==='Escape')closeProductModal()});
 if(page==='constructor'){
+ // Capture product-card clicks before SVG child hit areas can swallow them.
+ svg.addEventListener('click',e=>{
+  const target=e.target,card=target.closest?.('[data-card]');if(!card||!P[card.dataset.card])return;
+  if(target.closest?.('[data-control]'))return;
+  const hit=target.closest?.('.hit');
+  if(hit&&/^(Увеличить|Уменьшить|В корзину)/.test(hit.getAttribute('aria-label')||''))return;
+  e.preventDefault();e.stopPropagation();showProductModal(card.dataset.card);
+ },true);
  for(const g of cards){
   const id=g.dataset.card;if(!P[id])continue;
   g.style.cursor='pointer';g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label','Подробнее: '+P[id].name);

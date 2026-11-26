@@ -3,6 +3,7 @@ const svg=document.querySelector('svg[data-page]'),P=window.PONE_PRODUCTS,UI=win
 if(!svg||!P||!UI)return;
 const page=svg.dataset.page;
 const root=document.createElement('div');root.className='mobile-site';root.setAttribute('aria-label','Мобильная версия сайта');
+root.addEventListener('click',e=>{const card=e.target.closest?.('.m-card[data-product][role="button"]');if(!card||e.target.closest?.('button'))return;UI.showProductModal(card.dataset.product)});
 const $=(s,p=root)=>p.querySelector(s),$$=(s,p=root)=>[...p.querySelectorAll(s)];
 const el=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const btn=(txt,fn,cls)=>{const b=el('button',cls||'',txt);b.type='button';b.addEventListener('click',fn);return b};
@@ -29,7 +30,7 @@ const makeFooter=()=>{
 };
 const section=(title,sub)=>{const s=el('section','m-section');if(title)s.append(el('h2','m-section-title',title));if(sub)s.append(el('p','m-section-sub',sub));return s};
 const card=(p,mode='food')=>{
- const c=el('article','m-card'),im=el('img','m-card-image');im.src=p.image;im.alt=p.name;im.loading='lazy';im.decoding='async';im.style.cursor='pointer';
+ const c=el('article','m-card'),im=el('img','m-card-image');c.dataset.product=p.id;im.src=p.image;im.alt=p.name;im.loading='lazy';im.decoding='async';im.style.cursor='pointer';
  const body=el('div','m-card-body');
  if(p.tag)body.append(el('span','m-tag',p.tag));
  const title=el('h3','m-card-name',p.name);title.style.cursor='pointer';body.append(title,el('p','m-card-meta',(p.min>1?'От '+p.min+' шт.':'От 1 шт.')+' · '+money(p.price)));
@@ -37,7 +38,7 @@ const card=(p,mode='food')=>{
  const minus=btn('−',()=>{let n=Number(q.textContent);q.textContent=String(Math.max(p.min,n-1))},'m-qty-btn');
  const plus=btn('+',()=>{let n=Number(q.textContent);q.textContent=String(Math.min(999,n+1))},'m-qty-btn');
  const add=btn('В корзину',()=>UI.add(p.id,Number(q.textContent)),'m-add');
- controls.append(minus,q,plus,add);body.append(controls);c.append(im,body);if(page==='constructor'&&mode==='food'){c.setAttribute('role','button');c.setAttribute('tabindex','0');c.setAttribute('aria-label','Подробнее: '+p.name);c.addEventListener('click',e=>{if(e.target.closest('button'))return;UI.showProductModal(p.id)});c.addEventListener('keydown',e=>{if(e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();UI.showProductModal(p.id)}});}
+ controls.append(minus,q,plus,add);body.append(controls);c.append(im,body);if(page==='constructor'&&mode==='food'){c.setAttribute('role','button');c.setAttribute('tabindex','0');c.setAttribute('aria-label','Подробнее: '+p.name);c.addEventListener('keydown',e=>{if(e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();UI.showProductModal(p.id)}});}
  if(mode==='box'&&p.id==='fish'){c.classList.add('m-card-link');c.addEventListener('click',e=>{if(!e.target.closest('button'))location.href='product.html'})}
  return c;
 };
