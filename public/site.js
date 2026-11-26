@@ -69,10 +69,32 @@ function paintDots(dots,idx,photo=false){dots.forEach((d,i)=>{d.setAttribute('fi
 function wireRotation(groups,dots,next,prev,label){if(!groups.length)return;const positions=groups.map(g=>Number(g.dataset.slideX??g.dataset.x));let idx=0;const activeDots=dots.slice(0,groups.length);dots.slice(groups.length).forEach(d=>d.style.display='none');function move(target){idx=(target+groups.length)%groups.length;groups.forEach((g,i)=>{const x=positions[(i-idx+groups.length)%groups.length]-positions[i];g.classList.add('carousel-slide');g.style.transform=`translateX(${x}px)`});paintDots(activeDots,idx)}
  hit(svg,...next,61,61,()=>move(idx+1),'Следующие: '+label);hit(svg,...prev,61,61,()=>move(idx-1),'Предыдущие: '+label);activeDots.forEach((d,i)=>action(d,()=>move(i),label+' '+(i+1)));move(0)
 }
-// FAQ accordion, single open entry. Other answers limited to facts from supplied mockups.
+// FAQ accordion with measured height transitions and one open answer at a time.
 if(page==='home'){
  const faqs=[['Какая сумма минимального заказа?','Минимальной суммы нет. Большинство позиций – от 5 порций, а часть закусок можно заказать от 1 порции: минимум показан в карточке. Точное количество в порции указано в карточке товара.'],['Сколько стоит доставка и где самовывоз?','Самовывоз: ул. Притыцкого 26. Стоимость доставки уточните у менеджера.'],['Как мне узнать состав блюд и КБЖУ?','Состав и характеристики указаны в карточке товара. За уточнениями обращайтесь к менеджеру.'],['Какие есть способы оплаты?','Доступные способы оплаты уточните у менеджера.'],['В каком виде приезжает заказ?','Фудбоксы упакованы в картонные боксы. В макете также указана герметичная эко-упаковка.']];
- $$('[data-faq-original]',svg).forEach(e=>e.style.display='none');const panel=H('div',{class:'faq-panel'});faqs.forEach(([q,a],i)=>{const d=H('details',i===0?{open:''}:{});d.append(H('summary',{},q),H('p',{},a));d.addEventListener('toggle',()=>{if(d.open)$$('details',panel).filter(x=>x!==d).forEach(x=>x.open=false)});panel.append(d)});foreign(svg,804,7881,485,580,panel);
+ $('[data-faq-original]',svg).forEach(e=>e.style.display='none');const panel=H('div',{class:'faq-panel'});
+ const setFaqOpen=(details,open)=>{
+  const body=$('p',details);if(!body)return;
+  if(open){
+   if(details.open)return;
+   details.open=true;body.style.overflow='hidden';body.style.maxHeight='0px';body.style.opacity='0';body.style.paddingBottom='0px';
+   requestAnimationFrame(()=>{body.style.maxHeight=body.scrollHeight+'px';body.style.opacity='1';body.style.paddingBottom='22px'});
+  }else if(details.open){
+   if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){details.open=false;return}
+   body.style.maxHeight=body.scrollHeight+'px';
+   requestAnimationFrame(()=>{body.style.maxHeight='0px';body.style.opacity='0';body.style.paddingBottom='0px'});
+   const finish=e=>{if(e.propertyName!=='max-height')return;body.removeEventListener('transitionend',finish);details.open=false};
+   body.addEventListener('transitionend',finish);
+  }
+ };
+ faqs.forEach(([q,a],i)=>{
+  const d=H('details',i===0?{open:''}:{}),summary=H('summary',{},q),answer=H('p',{},a);
+  if(i===0)answer.style.maxHeight='none';
+  d.append(summary,answer);
+  summary.addEventListener('click',event=>{event.preventDefault();const opening=!d.open;$('details',panel).forEach(item=>setFaqOpen(item,item===d&&opening))});
+  panel.append(d);
+ });
+ foreign(svg,804,7881,485,580,panel);
  // Group the four original benefit cards, keeping all vector elements.
  const advantages=$('#Advantages',svg);
  if(advantages){let group=null;for(const el of [...advantages.children]){if(el.tagName.toLowerCase()==='g'&&el.querySelector('rect')){group=S('g',{class:'benefit-card'});advantages.insertBefore(group,el);el.querySelector('rect').classList.add('benefit-bg')}if(group)group.append(el)}for(const card of [...advantages.children].filter(e=>e.classList.contains('benefit-card'))){const bg=card.querySelector('.benefit-bg'),outer=S('g',{class:'benefit-hover-zone'});advantages.insertBefore(outer,card);outer.append(card);const area=S('rect',{x:bg.getAttribute('x'),y:bg.getAttribute('y'),width:bg.getAttribute('width'),height:bg.getAttribute('height'),rx:bg.getAttribute('rx'),fill:'transparent','pointer-events':'all'});outer.insertBefore(area,card)}}
@@ -110,10 +132,16 @@ const productModalShade=H('div',{class:'product-modal-backdrop',hidden:''});
 document.body.append(productModalShade);
 let productModalQty=1,productModalId=null,productModalReturnFocus=null;
 function closeProductModal(){
- if(productModalShade.hidden)return;
- productModalShade.hidden=true;
- document.body.classList.remove('product-modal-open');
- productModalReturnFocus?.focus?.();
+ if(productModalShade.hidden||productModalShade.classList.contains('is-closing'))return;
+ const finish=()=>{
+  productModalShade.classList.remove('is-closing');
+  productModalShade.hidden=true;
+  document.body.classList.remove('product-modal-open');
+  productModalReturnFocus?.focus?.();
+ };
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){finish();return}
+ productModalShade.classList.add('is-closing');
+ productModalShade.addEventListener('animationend',event=>{if(event.target===productModalShade)finish()},{once:true});
 }
 productModalShade.addEventListener('click',e=>{if(e.target===productModalShade)closeProductModal()});
 function showProductModal(id){
@@ -158,6 +186,7 @@ function showProductModal(id){
  controls.append(price,minus,qty,plus,cartButton);info.append(controls);
  dialog.append(photo,info);
  productModalShade.replaceChildren(dialog);
+ productModalShade.classList.remove('is-closing');
  productModalShade.hidden=false;
  document.body.classList.add('product-modal-open');
  updateQty();
