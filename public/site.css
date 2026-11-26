@@ -236,3 +236,174 @@ summary:focus,summary:focus-visible,
  stroke:none!important;
 }
 .design .hit:focus,.design .hit:focus-visible{outline:0!important;stroke:transparent!important}
+
+
+/* Smooth in-page navigation; full page links keep their normal navigation behavior. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+#Partners, #FAQ, #Gallery, #RequestForm, #Footer {
+  scroll-margin-top: 88px;
+}
+
+/* The whole SVG benefit tile is a hover target, not only its text nodes. */
+.benefit-hover-zone { pointer-events: all; cursor: pointer; }
+.benefit-card { pointer-events: all; }
+.benefit-card text, .benefit-card path { pointer-events: none; }
+
+/* Visible hover feedback for the fixed desktop navigation hit areas. */
+.sticky-desktop-header svg a { cursor: pointer; }
+.sticky-desktop-header svg a rect {
+  fill: transparent;
+  transition: fill .22s ease;
+}
+.sticky-desktop-header svg a:hover rect,
+.sticky-desktop-header svg a:focus-visible rect {
+  fill: #ff580018;
+}
+.sticky-desktop-header svg a:active rect { fill: #ff58002b; }
+.sticky-html-header nav a {
+  border-radius: 18px;
+  padding: 10px 12px;
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+}
+.sticky-html-header nav a:hover,
+.sticky-html-header nav a:focus-visible {
+  color: #c74200;
+  background: #fff0e8;
+}
+.sticky-html-header nav a:active { transform: scale(.97); }
+.sticky-html-header .sticky-html-cart { transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.sticky-html-header .sticky-html-cart:hover { background: #e94f00; box-shadow: 0 6px 16px #ff580033; transform: translateY(-1px); }
+
+/* FAQ answers open and close with a measured-height transition. */
+.faq-panel details p {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  padding-bottom: 0;
+  transition: max-height .42s cubic-bezier(.22,.61,.36,1), opacity .28s ease, padding-bottom .3s ease;
+  will-change: max-height, opacity;
+}
+
+/* Food detail modal: soft fade, lift and scale instead of appearing abruptly. */
+.product-modal-backdrop:not(.is-closing) {
+  animation: product-backdrop-in .28s ease-out both;
+}
+.product-modal {
+  transform-origin: center;
+  animation: product-dialog-in .4s cubic-bezier(.2,.8,.2,1) both;
+}
+.product-modal-backdrop.is-closing {
+  animation: product-backdrop-out .2s ease-in both;
+}
+.product-modal-backdrop.is-closing .product-modal {
+  animation: product-dialog-out .2s ease-in both;
+}
+@keyframes product-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes product-dialog-in { from { opacity: 0; transform: translateY(18px) scale(.965); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes product-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes product-dialog-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.98); } }
+
+/* Mobile navigation and the missing home-page content blocks. */
+.m-nav {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: max-height .32s cubic-bezier(.22,.61,.36,1), opacity .24s ease, transform .32s ease;
+}
+.m-nav.is-open { max-height: 360px; opacity: 1; transform: translateY(0); }
+.m-nav a { transition: background .2s ease, color .2s ease, padding-left .2s ease; }
+.m-nav a:hover, .m-nav a:focus-visible { background: #fff1e9; color: #c74200; padding-left: 10px; }
+.m-nav a:active { background: #ffe0cf; }
+
+.m-reasons { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.m-reasons > .m-section-title, .m-reasons > .m-section-sub { grid-column: 1 / -1; }
+.m-reason {
+  min-width: 0;
+  padding: 17px 14px;
+  border: 1px solid #ececec;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 3px 9px #00000008;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.m-reason > span { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #fff0e8; color: #ff5800; }
+.m-reason h3 { margin: 10px 0 6px; font-size: 13px; line-height: 1.3; }
+.m-reason p { margin: 0; color: #777; font-size: 11px; line-height: 1.5; }
+.m-solution { min-height: 116px; gap: 6px 12px; border: 1px solid #ededed; transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease; }
+.m-solution-number { grid-row: 1 / span 2; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #fff0e8; color: #ff5800; font-size: 12px; font-weight: 700; }
+.m-solution-description { grid-column: 2; }
+.m-solution-action { grid-column: 1 / -1; justify-self: end; color: #ff5800; font-size: 11px; }
+.m-partner-copy { margin: 10px 0 18px; color: #666; font-size: 13px; line-height: 1.65; }
+.m-partner-note { margin: 12px 0 0; color: #777; font-size: 12px; }
+
+/* Subtle on-scroll entrances and tactile feedback on touch devices. */
+.mobile-site .m-reveal {
+  opacity: 0;
+  transform: translateY(18px) scale(.99);
+  transition: opacity .52s ease, transform .62s cubic-bezier(.22,.61,.36,1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.mobile-site .m-reveal.is-visible { opacity: 1; transform: translateY(0) scale(1); }
+.mobile-site .m-card:active,
+.mobile-site .m-benefit:active,
+.mobile-site .m-reason:active,
+.mobile-site .m-solution:active { transform: scale(.985); }
+.mobile-site .m-primary:active,
+.mobile-site .m-secondary:active,
+.mobile-site .m-add:active,
+.mobile-site .m-qty-btn:active { transform: scale(.96); }
+.mobile-site .m-chip { transition: background .2s ease, color .2s ease, transform .2s ease; }
+.mobile-site .m-chip:active { transform: scale(.96); }
+.mobile-site .m-gallery img { transition: transform .25s ease, filter .25s ease; }
+.mobile-site .m-gallery img:active { transform: scale(.975); filter: brightness(.92); }
+.mobile-site .m-dot { transition: transform .2s ease, background .2s ease; }
+
+@media (max-width: 760px) {
+  html { scroll-padding-top: calc(76px + env(safe-area-inset-top)); }
+  #partners, #faq, #contacts { scroll-margin-top: calc(78px + env(safe-area-inset-top)); }
+  .m-header { padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+  .m-nav { position: sticky; top: calc(64px + env(safe-area-inset-top)); }
+  .m-benefit, .m-reason, .m-solution { min-width: 0; }
+  .m-reason { padding: 15px 12px; }
+  .m-partner-copy { font-size: 12px; }
+  .m-faq-item p {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: max-height .4s cubic-bezier(.22,.61,.36,1), opacity .28s ease, padding-bottom .3s ease;
+  }
+  .m-faq-item[open] p { opacity: 1; }
+  .m-product-info { min-width: 0; }
+  .m-product-buy { gap: 8px; }
+  .m-product-buy .m-add { min-width: 120px; }
+}
+@media (max-width: 380px) {
+  .m-grid { gap: 8px; }
+  .m-card-body { padding: 8px 7px 9px; }
+  .m-card-controls { gap: 2px; padding: 3px; }
+  .m-qty-btn { width: 22px; }
+  .m-add { padding: 0 7px; font-size: 9px; }
+  .m-reason { padding: 13px 10px; }
+  .m-reason h3 { font-size: 12px; }
+  .m-reason p { font-size: 10px; }
+  .m-solution { padding: 13px; }
+}
+@media (max-height: 620px) and (max-width: 760px) {
+  .product-modal-backdrop { padding: 8px; }
+  .product-modal { height: calc(100dvh - 16px); }
+  .product-modal-photo { padding: 8px 16px; }
+  .product-modal-info { padding-top: 12px; padding-bottom: 12px; }
+  .product-modal-ingredients { margin-top: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .mobile-site .m-reveal { opacity: 1; transform: none; transition: none; }
+  .product-modal-backdrop, .product-modal-backdrop.is-closing, .product-modal, .product-modal-backdrop.is-closing .product-modal { animation: none !important; }
+  .faq-panel details p, .m-faq-item p { transition: none !important; }
+}
