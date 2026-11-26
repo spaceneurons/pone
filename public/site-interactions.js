@@ -203,6 +203,35 @@
       fixedSvg.append(cartHit);
       shell.append(fixedSvg);
       document.body.append(shell);
+    } else {
+      const bar = document.createElement('div');
+      bar.className = 'sticky-html-header';
+      const link = (label, href) => {
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = label;
+        return a;
+      };
+      bar.append(link('Вкусный След', 'index.html'));
+      const nav = document.createElement('nav');
+      nav.append(
+        link('Меню', 'constructor.html'),
+        link('Готовые наборы', 'boxes.html'),
+        link('Партнёрам', 'index.html#Partners'),
+        link('Доставка и оплата', 'index.html#FAQ'),
+        link('Кафе', 'index.html#Gallery')
+      );
+      bar.append(nav);
+      bar.append(link('Позвонить нам', 'tel:+375441234567'));
+      const cart = document.createElement('button');
+      cart.type = 'button';
+      cart.className = 'sticky-html-cart';
+      cart.textContent = 'Корзина (' + (window.PONE_UI?.count?.() ?? 0) + ')';
+      cart.setAttribute('aria-label', 'Открыть корзину');
+      cart.addEventListener('click', () => window.PONE_UI?.showCart?.());
+      bar.append(cart);
+      shell.append(bar);
+      document.body.append(shell);
     }
   }
 })();
