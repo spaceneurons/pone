@@ -153,3 +153,13 @@
  .m-empty[hidden]{display:none}
 }
 @media(min-width:761px){.mobile-site{display:none!important}}
+
+@media(max-width:760px){
+ .m-primary.m-full{display:block;text-align:center;text-decoration:none}
+ .m-footer{grid-template-columns:1fr}
+ .m-cart-shade,.cart-shade{z-index:1000}
+ .m-card-name{overflow-wrap:anywhere}
+ .m-catalog-controls{position:relative}
+ .m-chips{touch-action:pan-x}
+ .m-product-buy .m-add{min-width:130px}
+}
