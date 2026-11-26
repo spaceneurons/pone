@@ -1,0 +1,15 @@
+/* Desktop scroll reveals — isolated from the storefront interaction code. */
+@media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+  .site-scroll-reveal {
+    opacity: 0;
+    translate: 0 20px;
+    transition:
+      opacity 720ms cubic-bezier(.22,.61,.36,1),
+      translate 720ms cubic-bezier(.22,.61,.36,1);
+    transition-delay: var(--scroll-delay, 0ms);
+  }
+  .site-scroll-reveal.is-visible {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
