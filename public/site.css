@@ -209,3 +209,30 @@ body.product-modal-open{overflow:hidden}
  .product-modal-ingredients p{font-size:13px}
  .product-modal-controls{gap:7px;padding-left:10px}
 }
+
+/* Remove browser blue focus frames and tap flashes across the entire site. */
+:focus,:focus-visible,
+button:focus,button:focus-visible,
+a:focus,a:focus-visible,
+input:focus,input:focus-visible,
+textarea:focus,textarea:focus-visible,
+select:focus,select:focus-visible,
+summary:focus,summary:focus-visible,
+[tabindex]:focus,[tabindex]:focus-visible{
+ outline:0!important;
+ box-shadow:none!important;
+}
+*{-webkit-tap-highlight-color:transparent}
+.design [data-card]:focus,
+.design [data-card]:focus-visible,
+.design .click-target:focus,
+.design .click-target:focus-visible,
+.design a:focus,
+.design a:focus-visible,
+.design foreignObject button:focus,
+.design foreignObject button:focus-visible{
+ outline:0!important;
+ box-shadow:none!important;
+ stroke:none!important;
+}
+.design .hit:focus,.design .hit:focus-visible{outline:0!important;stroke:transparent!important}
