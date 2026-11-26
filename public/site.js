@@ -20,7 +20,7 @@ if(page==='product'){
   const price=$('text',productCard).find(t=>t.textContent.includes('200 Br'));
   if(price)tspan(price).textContent=Number(selected.price).toLocaleString('ru-RU')+' Br';
   const qty=$('[data-control="qty"]',productCard);if(qty)tspan(qty).textContent=String(selected.min||1);
-  const weight=$('text',productCard).find(t=>/^\\s*850\\s*г\\s*$/.test(t.textContent));
+  const weight=$('text',productCard).find(t=>/^\s*850\s*г\s*$/.test(t.textContent));
   const specs=$('text',productCard).find(t=>t.textContent.includes('Вес:')&&t.textContent.includes('Упаковка:'));
   const nutrition=$('text',productCard).find(t=>t.textContent.includes('КБЖУ:'));
   const composition=$('text',productCard).find(t=>t.textContent.includes('Канапе с ветчиной'));
