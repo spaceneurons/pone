@@ -141,7 +141,12 @@ function closeProductModal(){
  };
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){finish();return}
  productModalShade.classList.add('is-closing');
- productModalShade.addEventListener('animationend',event=>{if(event.target===productModalShade)finish()},{once:true});
+ const onCloseAnimation=event=>{
+  if(event.target!==productModalShade)return;
+  productModalShade.removeEventListener('animationend',onCloseAnimation);
+  finish();
+ };
+ productModalShade.addEventListener('animationend',onCloseAnimation);
 }
 productModalShade.addEventListener('click',e=>{if(e.target===productModalShade)closeProductModal()});
 function showProductModal(id){
