@@ -14,7 +14,7 @@
   const card = svg.querySelector('g[data-card="festive"]') || svg.querySelector('g[data-card]');
   if (!card) return;
 
-  card.dataset.card = selectedId;
+  // Keep the template's festive ID so the related-products carousel excludes this main card.
   card.dataset.tag = product.tag || '';
   card.setAttribute('aria-label', product.name);
 
