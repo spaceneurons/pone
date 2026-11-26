@@ -78,7 +78,7 @@ if(page==='home'){
   if(open){
    if(details.open)return;
    details.open=true;body.style.overflow='hidden';body.style.maxHeight='0px';body.style.opacity='0';body.style.paddingBottom='0px';
-   requestAnimationFrame(()=>{body.style.maxHeight=body.scrollHeight+'px';body.style.opacity='1';body.style.paddingBottom='22px'});
+   requestAnimationFrame(()=>{body.style.paddingBottom='22px';body.style.maxHeight=body.scrollHeight+'px';body.style.opacity='1'});
   }else if(details.open){
    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){details.open=false;return}
    body.style.maxHeight=body.scrollHeight+'px';
