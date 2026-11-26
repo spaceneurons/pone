@@ -103,4 +103,5 @@ if(page==='constructor')hit(svg,170,125,205,45,()=>location.href='preview.html',
 if(page==='home'){for(const g of ['Partners','Gallery','Reviews','FAQ']){const el=svg.querySelector('#'+g);if(el)el.setAttribute('tabindex','-1')}}
 for(const t of textAll()){const v=val(t),[x,y]=xy(t);if(!Number.isFinite(x)||!Number.isFinite(y))continue;let target=null;if(['Парнерам','Партнерам'].includes(v))target='Partners';else if(v==='Отзывы'&&y>8000||v==='Отзывы'&&page!=='home')target='Reviews';else if(v==='Галерея'&&y>8000||v==='Галерея'&&page!=='home')target='Gallery';else if(v==='Вопрос-ответ')target='FAQ';if(target)hit(svg,x-4,y-22,170,30,()=>{if(page==='home')svg.querySelector('#'+target)?.scrollIntoView({behavior:'smooth'});else location.href='preview.html#'+target},v)}
 if(location.hash&&page==='home')requestAnimationFrame(()=>document.getElementById(location.hash.slice(1))?.scrollIntoView());
+window.PONE_UI={count,add,change,showCart,makeForm,openNow};
 })();
