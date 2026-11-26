@@ -7,7 +7,7 @@ const S=(tag,attrs={})=>{const el=document.createElementNS(NS,tag);for(const [k,
 const H=(tag,attrs={},text)=>{const el=document.createElement(tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);if(text!=null)el.textContent=text;return el};
 const tspan=t=>t.querySelector('tspan')||t;
 const val=t=>t.textContent.trim();
-const textAll=()=>$('text',svg);
+const textAll=()=>$$('text',svg);
 const productPageId=page==='product'?(new URLSearchParams(location.search).get('id')||'festive'):'';
 if(page==='product'){
  const selected=P[productPageId]&&P[productPageId].kind==='Фудбоксы'?P[productPageId]:P.festive;
@@ -15,15 +15,15 @@ if(page==='product'){
  const productCard=$('[data-card]',svg);
  if(productCard){
   productCard.dataset.card=selectedId;productCard.dataset.tag=selected.tag||'';
-  const title=$('text',productCard).find(t=>t.textContent.includes('Бокс Праздничный'));
+  const title=$$('text',productCard).find(t=>t.textContent.includes('Бокс Праздничный'));
   if(title)tspan(title).textContent=selected.name;
-  const price=$('text',productCard).find(t=>t.textContent.includes('200 Br'));
+  const price=$$('text',productCard).find(t=>t.textContent.includes('200 Br'));
   if(price)tspan(price).textContent=Number(selected.price).toLocaleString('ru-RU')+' Br';
   const qty=$('[data-control="qty"]',productCard);if(qty)tspan(qty).textContent=String(selected.min||1);
-  const weight=$('text',productCard).find(t=>/^\s*850\s*г\s*$/.test(t.textContent));
-  const specs=$('text',productCard).find(t=>t.textContent.includes('Вес:')&&t.textContent.includes('Упаковка:'));
-  const nutrition=$('text',productCard).find(t=>t.textContent.includes('КБЖУ:'));
-  const composition=$('text',productCard).find(t=>t.textContent.includes('Канапе с ветчиной'));
+  const weight=$$('text',productCard).find(t=>/^\s*850\s*г\s*$/.test(t.textContent));
+  const specs=$$('text',productCard).find(t=>t.textContent.includes('Вес:')&&t.textContent.includes('Упаковка:'));
+  const nutrition=$$('text',productCard).find(t=>t.textContent.includes('КБЖУ:'));
+  const composition=$$('text',productCard).find(t=>t.textContent.includes('Канапе с ветчиной'));
   if(selectedId!=='festive'){
    if(weight)weight.style.display='none';
    if(specs)specs.style.display='none';
