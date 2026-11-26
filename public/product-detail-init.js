@@ -34,7 +34,7 @@
   setText(quantity, String(product.min || 1));
 
   if (selectedId !== 'festive') {
-    const weight = texts.find(node => /^\\s*850\\s*г\\s*$/.test(node.textContent));
+        const weight = texts.find(node => node.textContent.trim() === '850 г');
     const specifications = texts.find(node =>
       node.textContent.includes('Вес:') && node.textContent.includes('Упаковка:')
     );
