@@ -67,12 +67,14 @@
       const id = card.getAttribute('data-card');
       if (!products[id] || products[id].kind === 'Фудбоксы') return;
       setCardAccess(card, 'button', 'Подробнее: ' + products[id].name);
-      card.addEventListener('keydown', event => {
-        if (event.target === card && (event.key === 'Enter' || event.key === ' ')) {
-          event.preventDefault();
-          openFoodModal(id);
-        }
-      });
+      if (page === 'home') {
+        card.addEventListener('keydown', event => {
+          if (event.target === card && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            openFoodModal(id);
+          }
+        });
+      }
     });
     document.addEventListener('click', event => {
       const card = cardFrom(event.target, modalSelector);
