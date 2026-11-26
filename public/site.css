@@ -407,3 +407,15 @@ html {
   .product-modal-backdrop, .product-modal-backdrop.is-closing, .product-modal, .product-modal-backdrop.is-closing .product-modal { animation: none !important; }
   .faq-panel details p, .m-faq-item p { transition: none !important; }
 }
+
+/* Restore a clear hover state on the home menu categories and catalog filters. */
+.home-menu-tabs button:hover:not(.selected) {
+  background: #ffe3d4 !important;
+  color: #c74200 !important;
+  transform: translateX(4px) !important;
+  box-shadow: inset 3px 0 #ff5800 !important;
+}
+.filter-bar button:hover:not(.selected) {
+  background: #ffe3d4 !important;
+  color: #c74200 !important;
+}
