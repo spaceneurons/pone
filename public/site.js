@@ -126,13 +126,14 @@ if(location.hash&&page==='home')requestAnimationFrame(()=>document.getElementByI
 // Product details modal used by desktop SVG cards and the mobile catalog.
 const productModalShade=H('div',{class:'product-modal-backdrop',hidden:''});
 document.body.append(productModalShade);
-let productModalQty=1,productModalId=null,productModalReturnFocus=null;
+let productModalQty=1,productModalId=null,productModalReturnFocus=null,productModalCloseTimer=null;
 function closeProductModal(){
  if(productModalShade.hidden||productModalShade.classList.contains('is-closing'))return;
  productModalShade.classList.remove('is-open');
  productModalShade.classList.add('is-closing');
  document.body.classList.remove('product-modal-open');
- window.setTimeout(()=>{
+ window.clearTimeout(productModalCloseTimer);
+ productModalCloseTimer=window.setTimeout(()=>{
   productModalShade.hidden=true;
   productModalShade.classList.remove('is-closing');
   productModalReturnFocus?.focus?.();
@@ -141,6 +142,7 @@ function closeProductModal(){
 productModalShade.addEventListener('click',e=>{if(e.target===productModalShade)closeProductModal()});
 function showProductModal(id){
  const p=P[id];if(!p)return;
+ window.clearTimeout(productModalCloseTimer);
  productModalId=id;productModalQty=p.min||1;productModalReturnFocus=document.activeElement;
  const card=cards.find(g=>g.dataset.card===id);
  const texts=card?$$('text',card).map(t=>t.textContent.replace(/\s+/g,' ').trim()).filter(Boolean):[];
