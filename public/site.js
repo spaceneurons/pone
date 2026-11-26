@@ -89,7 +89,7 @@ if(page==='home'){
  };
  faqs.forEach(([q,a],i)=>{
   const d=H('details',i===0?{open:''}:{}),summary=H('summary',{},q),answer=H('p',{},a);
-  if(i===0)answer.style.maxHeight='none';
+  if(i===0){answer.style.maxHeight='none';answer.style.opacity='1';answer.style.paddingBottom='22px';}
   d.append(summary,answer);
   summary.addEventListener('click',event=>{event.preventDefault();const opening=!d.open;$('details',panel).forEach(item=>setFaqOpen(item,item===d&&opening))});
   panel.append(d);
