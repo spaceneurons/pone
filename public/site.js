@@ -120,7 +120,7 @@ function showProductModal(id){
  const p=P[id];if(!p)return;
  productModalId=id;productModalQty=p.min||1;productModalReturnFocus=document.activeElement;
  const card=cards.find(g=>g.dataset.card===id);
- const texts=card?$('text',card).map(t=>t.textContent.replace(/\s+/g,' ').trim()).filter(Boolean):[];
+ const texts=card?$$('text',card).map(t=>t.textContent.replace(/\s+/g,' ').trim()).filter(Boolean):[];
  const weight=texts.find(t=>/^\d+(?:[.,]\d+)?\s*г$/i.test(t))||'';
  let composition=texts.find(t=>t.startsWith('Багет,'))||'';
  let nutrition='';
