@@ -160,6 +160,7 @@
         fixedSvg.append(anchor);
       };
 
+      addLink(54, 8, 165, 54, 'index.html', 'На главную');
       addLink(250, 8, 90, 55, 'constructor.html', 'Меню');
       addLink(350, 8, 153, 55, 'boxes.html', 'Готовые наборы');
       addLink(520, 8, 140, 55, 'index.html#Partners', 'Партнёрам');
