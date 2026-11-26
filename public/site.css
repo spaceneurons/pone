@@ -242,3 +242,5 @@ summary:focus,summary:focus-visible,
 
 /* Desktop hover and navigation motion refinements. */
 .benefit-hover-zone{pointer-events:all;cursor:pointer}.benefit-hover-zone .benefit-hit-area{pointer-events:all}.benefit-hover-zone:hover .benefit-card{transform:translateY(-9px) scale(1.025);filter:drop-shadow(0 12px 18px #ff580033)}.sticky-desktop-header a rect{transition:fill .22s ease}.sticky-desktop-header a:hover rect{fill:#ff58001c}.sticky-desktop-header a:focus-visible rect{fill:#ff58001c;stroke:#ff5800;stroke-width:1.5}@media(prefers-reduced-motion:reduce){.faq-answer,.faq-question,.product-modal-backdrop,.product-modal{transition:none!important}}
+
+.benefit-hover-zone:hover .benefit-bg{fill:#ff5800;stroke:#ff5800}.benefit-hover-zone:hover .benefit-card text,.benefit-hover-zone:hover .benefit-card path[fill]:not([fill="none"]){fill:#fff}.benefit-hover-zone:hover .benefit-card path[stroke]:not([stroke="none"]){stroke:#fff}
