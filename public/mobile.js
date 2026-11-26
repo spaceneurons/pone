@@ -26,8 +26,8 @@ const makeHeader=()=>{
  const nav=el('nav','m-nav');nav.hidden=true;
  nav.addEventListener('transitionend',e=>{if(e.propertyName==='max-height'&&!cartMenu)nav.hidden=true});
  nav.addEventListener('click',e=>{if(!e.target.closest('a'))return;cartMenu=false;nav.classList.remove('is-open');burger.setAttribute('aria-expanded','false')});
- const homeHref=page==='home'?'#':'index.html#';
- [['Меню','constructor.html'],['Готовые наборы','boxes.html'],['Партнерам',homeHref+'Partners'],['Доставка и оплата',homeHref+'FAQ'],['Контакты',homeHref+'Footer']].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
+ const sectionHref=id=>page==='home'?'#'+id:'index.html#'+id;
+ [['Меню','constructor.html'],['Готовые наборы','boxes.html'],['Партнерам',sectionHref('partners')],['Доставка и оплата',sectionHref('faq')],['Контакты',sectionHref('contacts')]].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
  root.append(h,nav);
 };
 const makeFooter=()=>{
