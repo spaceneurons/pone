@@ -141,6 +141,16 @@
       const clone = source.cloneNode(true);
       clone.removeAttribute('id');
       clone.removeAttribute('data-section');
+      clone.classList.remove('site-scroll-reveal', 'is-visible');
+      clone.style.removeProperty('opacity');
+      clone.style.removeProperty('translate');
+      clone.style.removeProperty('--scroll-delay');
+      clone.querySelectorAll('.site-scroll-reveal, .is-visible').forEach(node => {
+        node.classList.remove('site-scroll-reveal', 'is-visible');
+        node.style.removeProperty('opacity');
+        node.style.removeProperty('translate');
+        node.style.removeProperty('--scroll-delay');
+      });
       clone.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
       clone.querySelectorAll('a').forEach(node => node.remove());
       fixedSvg.append(clone);
