@@ -157,9 +157,11 @@
 
       const addLink = (x, y, width, height, href, label) => {
         const anchor = document.createElementNS(NS, 'a');
-        const targetHref = page === 'home' && href.startsWith('index.html#')
-          ? href.slice('index.html'.length)
-          : href;
+        const currentFile = page === 'home' ? 'index.html' : page === 'boxes' ? 'boxes.html' : page === 'constructor' ? 'constructor.html' : 'product.html';
+        const targetFile = href.split('#')[0] || currentFile;
+        let targetHref = href;
+        if (targetFile === currentFile) targetHref = href.includes('#') ? href.slice(href.indexOf('#')) : '#';
+        else if (page === 'home' && href.startsWith('index.html#')) targetHref = href.slice('index.html'.length);
         anchor.setAttribute('href', targetHref);
         anchor.setAttribute('aria-label', label);
         const rect = document.createElementNS(NS, 'rect');
