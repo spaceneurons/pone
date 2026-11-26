@@ -157,12 +157,7 @@
 
       const addLink = (x, y, width, height, href, label) => {
         const anchor = document.createElementNS(NS, 'a');
-        const currentFile = page === 'home' ? 'index.html' : page === 'boxes' ? 'boxes.html' : page === 'constructor' ? 'constructor.html' : 'product.html';
-        const targetFile = href.split('#')[0] || currentFile;
-        let targetHref = href;
-        if (targetFile === currentFile) targetHref = href.includes('#') ? href.slice(href.indexOf('#')) : '#';
-        else if (page === 'home' && href.startsWith('index.html#')) targetHref = href.slice('index.html'.length);
-        anchor.setAttribute('href', targetHref);
+        anchor.setAttribute('href', href);
         anchor.setAttribute('aria-label', label);
         const rect = document.createElementNS(NS, 'rect');
         rect.setAttribute('x', x);
@@ -208,9 +203,6 @@
       fixedSvg.append(cartHit);
       shell.append(fixedSvg);
       document.body.append(shell);
-      // The fixed clone is now the only desktop header; keep the SVG source in layout but hide its duplicate.
-      source.style.visibility = 'hidden';
-      source.setAttribute('aria-hidden', 'true');
     } else {
       const bar = document.createElement('div');
       bar.className = 'sticky-html-header';
