@@ -27,7 +27,8 @@ const makeHeader=()=>{
  nav.addEventListener('transitionend',e=>{if(e.propertyName==='max-height'&&!cartMenu)nav.hidden=true});
  nav.addEventListener('click',e=>{if(!e.target.closest('a'))return;cartMenu=false;nav.classList.remove('is-open');burger.setAttribute('aria-expanded','false')});
  const sectionHref=id=>page==='home'?'#'+id:'index.html#'+id;
- [['Меню','constructor.html'],['Готовые наборы','boxes.html'],['Партнерам',sectionHref('partners')],['Доставка и оплата',sectionHref('faq')],['Контакты',sectionHref('contacts')]].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
+ const pageHref=target=>page===target?'#':target+'.html';
+ [['Меню',pageHref('constructor')],['Готовые наборы',pageHref('boxes')],['Партнерам',sectionHref('partners')],['Доставка и оплата',sectionHref('faq')],['Контакты',sectionHref('contacts')]].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
  root.append(h,nav);
 };
 const makeFooter=()=>{
