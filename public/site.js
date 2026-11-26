@@ -104,5 +104,74 @@ if(page==='home'){for(const g of ['Partners','Gallery','Reviews','FAQ']){const e
 for(const t of textAll()){const v=val(t),[x,y]=xy(t);if(!Number.isFinite(x)||!Number.isFinite(y))continue;let target=null;if(['Парнерам','Партнерам'].includes(v))target='Partners';else if(v==='Отзывы'&&y>8000||v==='Отзывы'&&page!=='home')target='Reviews';else if(v==='Галерея'&&y>8000||v==='Галерея'&&page!=='home')target='Gallery';else if(v==='Вопрос-ответ')target='FAQ';if(target)hit(svg,x-4,y-22,170,30,()=>{if(page==='home')svg.querySelector('#'+target)?.scrollIntoView({behavior:'smooth'});else location.href='preview.html#'+target},v)}
 if(location.hash&&page==='home')requestAnimationFrame(()=>document.getElementById(location.hash.slice(1))?.scrollIntoView());
 
-window.PONE_UI={count,add,change,showCart,makeForm,openNow};
+
+// Product details modal used by desktop SVG cards and the mobile catalog.
+const productModalShade=H('div',{class:'product-modal-backdrop',hidden:''});
+document.body.append(productModalShade);
+let productModalQty=1,productModalId=null,productModalReturnFocus=null;
+function closeProductModal(){
+ if(productModalShade.hidden)return;
+ productModalShade.hidden=true;
+ document.body.classList.remove('product-modal-open');
+ productModalReturnFocus?.focus?.();
+}
+productModalShade.addEventListener('click',e=>{if(e.target===productModalShade)closeProductModal()});
+function showProductModal(id){
+ const p=P[id];if(!p)return;
+ productModalId=id;productModalQty=p.min||1;productModalReturnFocus=document.activeElement;
+ const card=cards.find(g=>g.dataset.card===id);
+ const texts=card?$('text',card).map(t=>t.textContent.replace(/\s+/g,' ').trim()).filter(Boolean):[];
+ const weight=texts.find(t=>/^\d+(?:[.,]\d+)?\s*г$/i.test(t))||'';
+ let composition=texts.find(t=>t.startsWith('Багет,'))||'';
+ let nutrition='';
+ if(id==='pork'){
+  composition='Багет, томаты, свинина, укроп, соус-барбекю, крем-соус, лук-порей, шпинат, соль, перец, чеснок';
+  nutrition='КБЖУ: 12/14/16 на 100г';
+ }
+ const dialog=H('section',{class:'product-modal',role:'dialog','aria-modal':'true','aria-labelledby':'product-modal-title'});
+ const photo=H('div',{class:'product-modal-photo'});
+ const image=H('img',{src:p.image,alt:p.name,loading:'eager'});
+ photo.append(image);
+ const info=H('div',{class:'product-modal-info'});
+ const heading=H('div',{class:'product-modal-heading'});
+ heading.append(H('h2',{id:'product-modal-title'},p.name));
+ if(weight)heading.append(H('span',{class:'product-modal-weight'},weight));
+ info.append(heading);
+ if(nutrition)info.append(H('p',{class:'product-modal-nutrition'},nutrition));
+ const ingredients=H('div',{class:'product-modal-ingredients'});
+ ingredients.append(H('h3',{},'Состав:'));
+ ingredients.append(H('p',{},composition||'Состав уточняйте у менеджера.'));
+ info.append(ingredients);
+ const controls=H('div',{class:'product-modal-controls'});
+ const price=H('strong',{class:'product-modal-price'},money(p.price));
+ const minus=H('button',{type:'button',class:'product-modal-step','aria-label':'Уменьшить количество'},'−');
+ const qty=H('output',{class:'product-modal-qty','aria-live':'polite'},String(productModalQty));
+ const plus=H('button',{type:'button',class:'product-modal-step','aria-label':'Увеличить количество'},'+');
+ const cartButton=H('button',{type:'button',class:'product-modal-add','aria-label':'Добавить в корзину'});
+ const icon=S('svg',{viewBox:'0 0 24 24',width:25,height:25,fill:'none',stroke:'currentColor','stroke-width':1.8,'stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'});
+ icon.append(S('path',{d:'M3 3h2l2.2 12.1a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6'}),S('circle',{cx:10,cy:20,r:1}),S('circle',{cx:18,cy:20,r:1}));
+ cartButton.append(icon);
+ function updateQty(){qty.textContent=String(productModalQty);minus.disabled=productModalQty<=(p.min||1);plus.disabled=productModalQty>=999}
+ minus.addEventListener('click',()=>{productModalQty=Math.max(p.min||1,productModalQty-1);updateQty()});
+ plus.addEventListener('click',()=>{productModalQty=Math.min(999,productModalQty+1);updateQty()});
+ cartButton.addEventListener('click',()=>add(productModalId,productModalQty));
+ controls.append(price,minus,qty,plus,cartButton);info.append(controls);
+ dialog.append(photo,info);
+ productModalShade.replaceChildren(dialog);
+ productModalShade.hidden=false;
+ document.body.classList.add('product-modal-open');
+ updateQty();
+ requestAnimationFrame(()=>cartButton.focus());
+}
+document.addEventListener('keydown',e=>{if(!productModalShade.hidden&&e.key==='Escape')closeProductModal()});
+if(page==='constructor'){
+ for(const g of cards){
+  const id=g.dataset.card;if(!P[id])continue;
+  g.style.cursor='pointer';g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label','Подробнее: '+P[id].name);
+  g.addEventListener('click',e=>{if(e.target.closest?.('.hit')||e.target.closest?.('[data-control]'))return;showProductModal(id)});
+  g.addEventListener('keydown',e=>{if(e.target===g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();showProductModal(id)}});
+ }
+}
+
+window.PONE_UI={count,add,change,showCart,showProductModal,makeForm,openNow};
 })();

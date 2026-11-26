@@ -29,15 +29,15 @@ const makeFooter=()=>{
 };
 const section=(title,sub)=>{const s=el('section','m-section');if(title)s.append(el('h2','m-section-title',title));if(sub)s.append(el('p','m-section-sub',sub));return s};
 const card=(p,mode='food')=>{
- const c=el('article','m-card'),im=el('img','m-card-image');im.src=p.image;im.alt=p.name;im.loading='lazy';im.decoding='async';im.style.cursor='pointer';im.addEventListener('click',()=>location.href='product.html?id='+encodeURIComponent(p.id));
+ const c=el('article','m-card'),im=el('img','m-card-image');im.src=p.image;im.alt=p.name;im.loading='lazy';im.decoding='async';im.style.cursor='pointer';
  const body=el('div','m-card-body');
  if(p.tag)body.append(el('span','m-tag',p.tag));
- const title=el('h3','m-card-name',p.name);title.style.cursor='pointer';title.addEventListener('click',()=>location.href='product.html?id='+encodeURIComponent(p.id));body.append(title,el('p','m-card-meta',(p.min>1?'От '+p.min+' шт.':'От 1 шт.')+' · '+money(p.price)));
+ const title=el('h3','m-card-name',p.name);title.style.cursor='pointer';body.append(title,el('p','m-card-meta',(p.min>1?'От '+p.min+' шт.':'От 1 шт.')+' · '+money(p.price)));
  const controls=el('div','m-card-controls'),q=el('span','m-qty',''+p.min);
  const minus=btn('−',()=>{let n=Number(q.textContent);q.textContent=String(Math.max(p.min,n-1))},'m-qty-btn');
  const plus=btn('+',()=>{let n=Number(q.textContent);q.textContent=String(Math.min(999,n+1))},'m-qty-btn');
  const add=btn('В корзину',()=>UI.add(p.id,Number(q.textContent)),'m-add');
- controls.append(minus,q,plus,add);body.append(controls);c.append(im,body);
+ controls.append(minus,q,plus,add);body.append(controls);c.append(im,body);c.setAttribute('role','button');c.setAttribute('tabindex','0');c.setAttribute('aria-label','Подробнее: '+p.name);c.addEventListener('click',e=>{if(e.target.closest('button'))return;UI.showProductModal(p.id)});c.addEventListener('keydown',e=>{if(e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();UI.showProductModal(p.id)}});
  if(mode==='box'&&p.id==='fish'){c.classList.add('m-card-link');c.addEventListener('click',e=>{if(!e.target.closest('button'))location.href='product.html'})}
  return c;
 };
