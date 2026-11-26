@@ -56,6 +56,31 @@
     }, true);
   }
 
+  // Ready boxes on the home page also open their own matching detail page.
+  if (page === 'home') {
+    const readySelector = 'svg[data-page="home"] #ReadyBoxes [data-card]';
+    svg.querySelectorAll(readySelector).forEach(card => {
+      const id = card.getAttribute('data-card');
+      if (!products[id] || products[id].kind !== 'Фудбоксы') return;
+      setCardAccess(card, 'link', 'Открыть ' + products[id].name);
+      card.addEventListener('keydown', event => {
+        if (event.target === card && event.key === 'Enter') {
+          event.preventDefault();
+          goToProduct(id);
+        }
+      });
+    });
+    document.addEventListener('click', event => {
+      const card = cardFrom(event.target, readySelector);
+      if (!card || isControl(event.target)) return;
+      const id = card.getAttribute('data-card');
+      if (!products[id] || products[id].kind !== 'Фудбоксы') return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      goToProduct(id);
+    }, true);
+  }
+
   const modalSelector = page === 'constructor'
     ? 'svg[data-page="constructor"] [data-card]'
     : page === 'home'
@@ -100,7 +125,7 @@
   }
 
   if (!document.querySelector('.sticky-desktop-header')) {
-    const source = svg.querySelector('#Header, [data-section="Header"]');
+    const source = svg.querySelector('#Header, [data-section="Header"], [data-section="CatalogHeader"]');
     if (source) {
       const NS = 'http://www.w3.org/2000/svg';
       const shell = document.createElement('div');
