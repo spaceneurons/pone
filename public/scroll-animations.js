@@ -1,0 +1,125 @@
+(() => {
+  'use strict';
+  try {
+    const svg = document.querySelector('svg[data-page]');
+    const desktop = window.matchMedia('(min-width: 761px)');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!svg || !desktop.matches || reduced.matches) return;
+
+    const normalize = value => (value || '').replace(/\\s+/g, ' ').trim();
+    const direct = (root, selector) => root ? Array.from(root.querySelectorAll(':scope > ' + selector)) : [];
+    const observer = 'IntersectionObserver' in window
+      ? new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: 0.035, rootMargin: '0px 0px -7% 0px' })
+      : null;
+
+    const reveal = (nodes, step = 65) => {
+      let index = 0;
+      nodes.filter(Boolean).forEach(node => {
+        if (node.dataset.scrollRevealReady) return;
+        node.dataset.scrollRevealReady = '1';
+        node.classList.add('site-scroll-reveal');
+        node.style.setProperty('--scroll-delay', Math.min(index++, 10) * step + 'ms');
+        if (observer) observer.observe(node);
+        else node.classList.add('is-visible');
+      });
+    };
+
+    const home = svg.dataset.page === 'home';
+    if (home) {
+      const menu = svg.querySelector('#MenuConstructor');
+      if (menu) {
+        const texts = direct(menu, 'text');
+        const findText = value => texts.find(node => normalize(node.textContent).includes(value));
+        const categoryNames = ['Брускетты', 'Бургеры', 'Канапе', 'Круассаны', 'Бейглы', 'Боссче', 'Аппетайзеры', 'Все позиции'];
+        const categories = categoryNames.map(findText);
+        const cards = direct(menu, 'g[data-card]').sort((a, b) =>
+          Number(a.getAttribute('data-y')) - Number(b.getAttribute('data-y')) ||
+          Number(a.getAttribute('data-x')) - Number(b.getAttribute('data-x'))
+        );
+        const filterRect = direct(menu, 'rect').find(node => node.getAttribute('x') === '1166');
+        const filterIcon = direct(menu, 'g[clip-path]');
+        const activePill = direct(menu, 'rect').find(node => node.getAttribute('x') === '131' && node.getAttribute('y') === '4000');
+        const ctaRect = direct(menu, 'rect').find(node => node.getAttribute('x') === '403' && node.getAttribute('y') === '4967');
+        reveal([
+          findText('Меню-конструктор'),
+          findText('На нашли подходящий фудбокс'),
+          filterRect,
+          ...filterIcon,
+          findText('Фильтр'),
+          findText('Меню'),
+          activePill,
+          ...categories,
+          ...cards,
+          ctaRect,
+          findText('Смотреть все позиции')
+        ], 68);
+      }
+
+      const sectionIds = ['Header', 'Hero', 'Advantages', 'Solutions', 'ReadyBoxes', 'Reasons', 'Reviews', 'ReadyBoxesPagination', 'FAQ', 'Gallery', 'Partners', 'RequestForm', 'Footer'];
+      sectionIds.forEach(id => {
+        const section = svg.querySelector('#' + id);
+        if (!section) return;
+        const nodes = Array.from(section.children).filter(node => {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'mask' || tag === 'defs' || tag === 'clippath') return false;
+          if (tag === 'path' && node.getAttribute('stroke')?.toUpperCase() === '#FF5800') return false;
+          return tag === 'text' ||
+            (tag === 'g' && (node.hasAttribute('filter') || node.hasAttribute('data-card'))) ||
+            node.hasAttribute('data-card') ||
+            node.hasAttribute('data-gallery') ||
+            node.hasAttribute('data-faq-original') ||
+            tag === 'image';
+        });
+        reveal(nodes, id === 'FAQ' ? 42 : 58);
+      });
+
+      // Draw the orange path in "Почему выбирают нас?" in sync with page scrolling.
+      const reasons = svg.querySelector('#Reasons');
+      const line = reasons && Array.from(reasons.children).find(node =>
+        node.tagName.toLowerCase() === 'path' &&
+        node.getAttribute('stroke')?.toUpperCase() === '#FF5800'
+      );
+      if (line && reasons && typeof line.getTotalLength === 'function') {
+        const length = line.getTotalLength();
+        line.style.strokeDasharray = length + ' ' + length;
+        line.style.strokeDashoffset = String(length);
+        let queued = false;
+        const draw = () => {
+          queued = false;
+          const rect = reasons.getBoundingClientRect();
+          const height = window.innerHeight || document.documentElement.clientHeight;
+          const progress = Math.max(0, Math.min(1, (height * 0.82 - rect.top) / (rect.height + height * 0.64)));
+          line.style.strokeDashoffset = String(length * (1 - progress));
+        };
+        const onScroll = () => {
+          if (queued) return;
+          queued = true;
+          window.requestAnimationFrame(draw);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+        draw();
+      }
+    } else {
+      // Other desktop pages: reveal catalog cards in a gentle stagger.
+      const cards = Array.from(svg.querySelectorAll('[data-card]')).sort((a, b) => {
+        const ay = Number(a.getAttribute('data-y') || 0), by = Number(b.getAttribute('data-y') || 0);
+        return ay - by || Number(a.getAttribute('data-x') || 0) - Number(b.getAttribute('data-x') || 0);
+      });
+      reveal(cards, 72);
+      const headings = Array.from(svg.querySelectorAll('text')).filter(node => {
+        const value = normalize(node.textContent);
+        return value.length > 5 && value.length < 90 && /^(Меню|Готовые наборы|Фудбоксы|Конструктор|Состав|Оформить заказ)/i.test(value);
+      });
+      reveal(headings, 85);
+    }
+  } catch (error) {
+    // Animation failures must never interrupt cart, navigation, or other site controls.
+  }
+})();
