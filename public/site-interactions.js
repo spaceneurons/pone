@@ -203,6 +203,18 @@
       fixedSvg.append(cartHit);
       shell.append(fixedSvg);
       document.body.append(shell);
+      const syncStickyHeader=()=>{
+        const shouldShow=source.getBoundingClientRect().bottom<=0;
+        shell.classList.toggle('is-visible',shouldShow);
+      };
+      let stickyFrame=0;
+      const queueStickyHeader=()=>{
+        if(stickyFrame)return;
+        stickyFrame=window.requestAnimationFrame(()=>{stickyFrame=0;syncStickyHeader()});
+      };
+      window.addEventListener('scroll',queueStickyHeader,{passive:true});
+      window.addEventListener('resize',queueStickyHeader,{passive:true});
+      syncStickyHeader();
     } else {
       const bar = document.createElement('div');
       bar.className = 'sticky-html-header';
@@ -234,4 +246,18 @@
       document.body.append(shell);
     }
   }
+
+  // Smoothly scroll only when a hash link targets this same document.
+  document.addEventListener('click',event=>{
+    const link=event.target.closest?.('a[href]');
+    if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    let targetUrl;
+    try{targetUrl=new URL(link.href,window.location.href)}catch{return}
+    if(targetUrl.origin!==window.location.origin||targetUrl.pathname!==window.location.pathname||!targetUrl.hash)return;
+    const target=document.getElementById(decodeURIComponent(targetUrl.hash.slice(1)));
+    if(!target)return;
+    event.preventDefault();
+    if(targetUrl.hash!==window.location.hash)window.history.pushState(null,'',targetUrl.hash);
+    target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  });
 })();
