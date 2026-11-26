@@ -253,7 +253,8 @@
     if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
     let targetUrl;
     try{targetUrl=new URL(link.href,window.location.href)}catch{return}
-    if(targetUrl.origin!==window.location.origin||targetUrl.pathname!==window.location.pathname||!targetUrl.hash)return;
+    const normalizePath=path=>path.replace(/index\.html$/,'').replace(/\/$/,'');
+    if(targetUrl.origin!==window.location.origin||normalizePath(targetUrl.pathname)!==normalizePath(window.location.pathname)||!targetUrl.hash)return;
     const target=document.getElementById(decodeURIComponent(targetUrl.hash.slice(1)));
     if(!target)return;
     event.preventDefault();
