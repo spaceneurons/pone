@@ -89,7 +89,7 @@ if(page==='home'){
   item.append(trigger,answer);panel.append(item);items.push({item,trigger,answer,inner});
   if(i===0)answer.style.maxHeight=inner.scrollHeight+'px';
  });
- foreign(svg,804,7881,485,580,panel);
+ foreign(svg,804,7881,485,580,panel);requestAnimationFrame(()=>{const first=items.find(entry=>entry.item.classList.contains('is-open'));if(first)first.answer.style.maxHeight=first.inner.scrollHeight+'px'});
 }
  // Group the four original benefit cards, keeping all vector elements.
  const advantages=$('#Advantages',svg);
