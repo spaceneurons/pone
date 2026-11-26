@@ -134,7 +134,6 @@
 /* Mobile-first responsive layout: the supplied 375px reference is the design baseline. */
 @media(max-width:760px){
  body.mobile-mode{background:#f1f1f1;overflow-x:hidden}
- body.mobile-mode .page{display:none!important}
  body.mobile-mode .mobile-site.m-active{display:block!important}
  .m-hero{padding:34px 22px 28px}
  .m-hero-image{display:block;width:100%;max-width:350px;height:155px;object-fit:cover;border-radius:16px;margin:18px auto 0;box-shadow:0 5px 14px #00000014}
