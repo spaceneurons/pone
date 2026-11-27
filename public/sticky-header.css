@@ -129,3 +129,27 @@
 @media (prefers-reduced-motion: reduce) {
   .sticky-desktop-header > svg > a > .nav-hover-pill { transition: none; }
 }
+
+/* Match the existing outlined phone button, without changing its link. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .sticky-desktop-header > svg > a[aria-label="Позвонить нам"] > rect:not(.nav-hover-pill) {
+    rx: 21.5px;
+    ry: 21.5px;
+    transition: fill .22s ease;
+  }
+  .sticky-desktop-header > svg > a[aria-label="Позвонить нам"]:hover > rect:not(.nav-hover-pill) {
+    fill: rgba(255, 88, 0, .08);
+    rx: 21px;
+    ry: 21px;
+  }
+  .sticky-html-header > a[href^="tel:"] {
+    cursor: pointer;
+    transition: background-color .22s ease;
+  }
+  .sticky-html-header > a[href^="tel:"]:hover {
+    background-color: rgba(255, 88, 0, .08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticky-html-header > a[href^="tel:"] { transition: none; }
+}

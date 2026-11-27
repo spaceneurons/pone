@@ -251,3 +251,33 @@ summary:focus,summary:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   #Solutions .solution-cta { transition: none; }
 }
+
+/* Lift solution artwork and its existing click targets together, without changing layout. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  #Solutions > [data-solution-card]:not(.solution-hover-area) {
+    transition: transform .24s ease, opacity .22s ease;
+  }
+  #Solutions > [data-solution-card].site-scroll-reveal {
+    transition: transform .24s ease, opacity 720ms cubic-bezier(.22,.61,.36,1), translate 720ms cubic-bezier(.22,.61,.36,1);
+    transition-delay: 0ms, var(--scroll-delay, 0ms), var(--scroll-delay, 0ms);
+  }
+  svg.design[data-page="home"] > .hit[y="1648"][x="585"],
+  svg.design[data-page="home"] > .hit[y="1648"][x="971"] {
+    transition: transform .24s ease, fill .18s ease;
+  }
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="1"]:hover) #Solutions > [data-solution-card="1"]:not(.solution-hover-area),
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="2"]:hover, > .hit[x="585"][y="1648"]:hover) #Solutions > [data-solution-card="2"]:not(.solution-hover-area),
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="3"]:hover, > .hit[x="971"][y="1648"]:hover) #Solutions > [data-solution-card="3"]:not(.solution-hover-area),
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="2"]:hover, > .hit[x="585"][y="1648"]:hover) > .hit[x="585"][y="1648"],
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="3"]:hover, > .hit[x="971"][y="1648"]:hover) > .hit[x="971"][y="1648"] {
+    transform: translateY(-8px);
+  }
+}
+@media (min-width: 761px) and (prefers-reduced-motion: reduce) {
+  #Solutions > [data-solution-card],
+  svg.design[data-page="home"] > .hit[y="1648"][x="585"],
+  svg.design[data-page="home"] > .hit[y="1648"][x="971"] {
+    transform: none !important;
+    transition: none !important;
+  }
+}
