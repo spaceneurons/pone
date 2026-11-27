@@ -236,3 +236,18 @@ summary:focus,summary:focus-visible,
  stroke:none!important;
 }
 .design .hit:focus,.design .hit:focus-visible{outline:0!important;stroke:transparent!important}
+
+/* Only the three desktop solution cards: keep the original CTA links and hit targets. */
+@media (min-width: 761px) {
+  #Solutions .solution-cta { opacity: 1; transition: opacity .22s ease; }
+}
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="1"]:hover) #Solutions .solution-cta:not([data-solution-card="1"]),
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="2"]:hover, > .hit[x="585"][y="1648"]:hover) #Solutions .solution-cta:not([data-solution-card="2"]),
+  svg.design[data-page="home"]:has(#Solutions [data-solution-card="3"]:hover, > .hit[x="971"][y="1648"]:hover) #Solutions .solution-cta:not([data-solution-card="3"]) {
+    opacity: .3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #Solutions .solution-cta { transition: none; }
+}
