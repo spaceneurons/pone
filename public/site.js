@@ -72,7 +72,7 @@ function wireRotation(groups,dots,next,prev,label){if(!groups.length)return;cons
 // FAQ accordion, single open entry. Other answers limited to facts from supplied mockups.
 if(page==='home'){
  const faqs=[['Какая сумма минимального заказа?','Минимальной суммы нет. Большинство позиций – от 5 порций, а часть закусок можно заказать от 1 порции: минимум показан в карточке. Точное количество в порции указано в карточке товара.'],['Сколько стоит доставка и где самовывоз?','Самовывоз: ул. Притыцкого 26. Стоимость доставки уточните у менеджера.'],['Как мне узнать состав блюд и КБЖУ?','Состав и характеристики указаны в карточке товара. За уточнениями обращайтесь к менеджеру.'],['Какие есть способы оплаты?','Доступные способы оплаты уточните у менеджера.'],['В каком виде приезжает заказ?','Фудбоксы упакованы в картонные боксы. В макете также указана герметичная эко-упаковка.']];
- $('[data-faq-original]',svg).forEach(e=>e.style.display='none');
+ Array.from(svg.querySelectorAll('[data-faq-original]')).forEach(e=>e.style.display='none');
  const panel=H('div',{class:'faq-panel'}), faqAnimations=new WeakMap(), faqExpanded=new WeakMap();
  function setFaqExpanded(d,expanded){
   if(faqExpanded.get(d)===expanded)return;
@@ -102,7 +102,7 @@ if(page==='home'){
   summary.addEventListener('click',event=>{
    event.preventDefault();
    const expanded=!faqExpanded.get(d);
-   if(expanded)$('details',panel).filter(x=>x!==d).forEach(x=>setFaqExpanded(x,false));
+   if(expanded)Array.from(panel.querySelectorAll('details')).filter(x=>x!==d).forEach(x=>setFaqExpanded(x,false));
    setFaqExpanded(d,expanded);
   });
   panel.append(d);
