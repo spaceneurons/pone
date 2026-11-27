@@ -79,22 +79,6 @@
   .sticky-desktop-header > svg > a > rect {
     cursor: pointer;
   }
-  .sticky-desktop-header > svg > a[aria-label="Меню"] > rect,
-  .sticky-desktop-header > svg > a[aria-label="Готовые наборы"] > rect,
-  .sticky-desktop-header > svg > a[aria-label="Партнёрам"] > rect,
-  .sticky-desktop-header > svg > a[aria-label="Доставка и оплата"] > rect,
-  .sticky-desktop-header > svg > a[aria-label="Кафе"] > rect {
-    rx: 28px;
-    ry: 28px;
-    transition: fill .22s ease;
-  }
-  .sticky-desktop-header > svg > a[aria-label="Меню"]:hover > rect,
-  .sticky-desktop-header > svg > a[aria-label="Готовые наборы"]:hover > rect,
-  .sticky-desktop-header > svg > a[aria-label="Партнёрам"]:hover > rect,
-  .sticky-desktop-header > svg > a[aria-label="Доставка и оплата"]:hover > rect,
-  .sticky-desktop-header > svg > a[aria-label="Кафе"]:hover > rect {
-    fill: rgba(255, 88, 0, .11);
-  }
   .sticky-html-header nav a {
     border-radius: 999px;
     cursor: pointer;
@@ -115,4 +99,33 @@
   .sticky-html-header nav a {
     transition: none !important;
   }
+}
+
+/* Compact hover decoration, independent of the original clickable rectangle. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .sticky-desktop-header > svg > a > rect:not(.nav-hover-pill),
+  .sticky-desktop-header > svg > a:hover > rect:not(.nav-hover-pill) {
+    fill: transparent;
+    rx: 0;
+    ry: 0;
+  }
+  .sticky-desktop-header > svg > a > .nav-hover-pill {
+    fill: #ff5800;
+    opacity: 0;
+    rx: 17px;
+    ry: 17px;
+    pointer-events: none;
+    transition: opacity .22s ease;
+  }
+  .sticky-desktop-header > svg > a:hover > .nav-hover-pill {
+    fill: #ff5800;
+    opacity: .08;
+  }
+  .sticky-html-header nav a:hover {
+    background-color: rgba(255, 88, 0, .08);
+    box-shadow: 0 0 0 5px rgba(255, 88, 0, .08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticky-desktop-header > svg > a > .nav-hover-pill { transition: none; }
 }

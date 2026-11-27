@@ -192,6 +192,30 @@
         rect.setAttribute('fill', 'transparent');
         rect.setAttribute('pointer-events', 'all');
         anchor.append(rect);
+        const navText = {'Меню':'Меню','Готовые наборы':'Готовые наборы','Партнёрам':'Парнерам','Доставка и оплата':'Доставка и оплата','Кафе':'Кафе'}[label];
+        if (navText) {
+          const text = Array.from(clone.querySelectorAll('text')).find(node => node.textContent.trim() === navText);
+          if (text) {
+            const pill = document.createElementNS(NS, 'rect');
+            pill.setAttribute('class', 'nav-hover-pill');
+            pill.setAttribute('fill', '#ff5800');
+            pill.setAttribute('opacity', '0');
+            pill.setAttribute('pointer-events', 'none');
+            anchor.append(pill);
+            const fit = () => {
+              try {
+                const bounds = text.getBBox();
+                if (!bounds.width || !bounds.height) return;
+                pill.setAttribute('x', bounds.x - 11);
+                pill.setAttribute('y', bounds.y + bounds.height / 2 - 17);
+                pill.setAttribute('width', bounds.width + 22);
+                pill.setAttribute('height', '34');
+              } catch (_) { /* A decoration must never interrupt navigation. */ }
+            };
+            requestAnimationFrame(fit);
+            if (document.fonts) document.fonts.ready.then(fit, () => {});
+          }
+        }
         fixedSvg.append(anchor);
       };
 
