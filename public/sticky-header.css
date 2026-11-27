@@ -72,3 +72,47 @@
   .sticky-html-header nav a:nth-child(3),
   .sticky-html-header nav a:nth-child(4) { display: none; }
 }
+
+/* Desktop navigation hover: visual feedback only; keep all hit areas and handlers. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .sticky-desktop-header > svg > a,
+  .sticky-desktop-header > svg > a > rect {
+    cursor: pointer;
+  }
+  .sticky-desktop-header > svg > a[aria-label="Меню"] > rect,
+  .sticky-desktop-header > svg > a[aria-label="Готовые наборы"] > rect,
+  .sticky-desktop-header > svg > a[aria-label="Партнёрам"] > rect,
+  .sticky-desktop-header > svg > a[aria-label="Доставка и оплата"] > rect,
+  .sticky-desktop-header > svg > a[aria-label="Кафе"] > rect {
+    rx: 28px;
+    ry: 28px;
+    transition: fill .22s ease;
+  }
+  .sticky-desktop-header > svg > a[aria-label="Меню"]:hover > rect,
+  .sticky-desktop-header > svg > a[aria-label="Готовые наборы"]:hover > rect,
+  .sticky-desktop-header > svg > a[aria-label="Партнёрам"]:hover > rect,
+  .sticky-desktop-header > svg > a[aria-label="Доставка и оплата"]:hover > rect,
+  .sticky-desktop-header > svg > a[aria-label="Кафе"]:hover > rect {
+    fill: rgba(255, 88, 0, .11);
+  }
+  .sticky-html-header nav a {
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color .22s ease, box-shadow .22s ease;
+  }
+  .sticky-html-header nav a:hover {
+    background-color: rgba(255, 88, 0, .11);
+    box-shadow: 0 0 0 5px rgba(255, 88, 0, .11);
+  }
+}
+@media (min-width: 761px) {
+  .sticky-desktop-header > svg > rect[aria-label="Открыть корзину"] {
+    cursor: pointer;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticky-desktop-header > svg > a > rect,
+  .sticky-html-header nav a {
+    transition: none !important;
+  }
+}
