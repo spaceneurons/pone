@@ -72,6 +72,3 @@
   .sticky-html-header nav a:nth-child(3),
   .sticky-html-header nav a:nth-child(4) { display: none; }
 }
-
-@media (min-width: 761px){.sticky-desktop-header{opacity:0;transform:translateY(-100%);pointer-events:none;transition:opacity .24s ease,transform .32s cubic-bezier(.22,.61,.36,1)}.sticky-desktop-header.is-visible{opacity:1;transform:translateY(0);pointer-events:auto}}
-@media(prefers-reduced-motion:reduce){.sticky-desktop-header{transition:none!important}}

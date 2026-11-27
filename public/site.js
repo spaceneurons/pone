@@ -69,31 +69,13 @@ function paintDots(dots,idx,photo=false){dots.forEach((d,i)=>{d.setAttribute('fi
 function wireRotation(groups,dots,next,prev,label){if(!groups.length)return;const positions=groups.map(g=>Number(g.dataset.slideX??g.dataset.x));let idx=0;const activeDots=dots.slice(0,groups.length);dots.slice(groups.length).forEach(d=>d.style.display='none');function move(target){idx=(target+groups.length)%groups.length;groups.forEach((g,i)=>{const x=positions[(i-idx+groups.length)%groups.length]-positions[i];g.classList.add('carousel-slide');g.style.transform=`translateX(${x}px)`});paintDots(activeDots,idx)}
  hit(svg,...next,61,61,()=>move(idx+1),'Следующие: '+label);hit(svg,...prev,61,61,()=>move(idx-1),'Предыдущие: '+label);activeDots.forEach((d,i)=>action(d,()=>move(i),label+' '+(i+1)));move(0)
 }
-// FAQ accordion with measured-height transitions.
+// FAQ accordion, single open entry. Other answers limited to facts from supplied mockups.
 if(page==='home'){
  const faqs=[['Какая сумма минимального заказа?','Минимальной суммы нет. Большинство позиций – от 5 порций, а часть закусок можно заказать от 1 порции: минимум показан в карточке. Точное количество в порции указано в карточке товара.'],['Сколько стоит доставка и где самовывоз?','Самовывоз: ул. Притыцкого 26. Стоимость доставки уточните у менеджера.'],['Как мне узнать состав блюд и КБЖУ?','Состав и характеристики указаны в карточке товара. За уточнениями обращайтесь к менеджеру.'],['Какие есть способы оплаты?','Доступные способы оплаты уточните у менеджера.'],['В каком виде приезжает заказ?','Фудбоксы упакованы в картонные боксы. В макете также указана герметичная эко-упаковка.']];
- $('[data-faq-original]',svg).forEach(e=>e.style.display='none');
- const panel=H('div',{class:'faq-panel'});
- const items=[];
- faqs.forEach(([q,a],i)=>{
-  const item=H('section',{class:'faq-item'+(i===0?' is-open':'')});
-  const trigger=H('button',{type:'button',class:'faq-question','aria-expanded':String(i===0)},q);
-  const answer=H('div',{class:'faq-answer'});
-  const inner=H('div',{class:'faq-answer-inner'});
-  inner.append(H('p',{},a));answer.append(inner);
-  trigger.addEventListener('click',()=>{
-   const shouldOpen=!item.classList.contains('is-open');
-   items.forEach(entry=>{entry.item.classList.remove('is-open');entry.trigger.setAttribute('aria-expanded','false');entry.answer.style.maxHeight='0px'});
-   if(shouldOpen){item.classList.add('is-open');trigger.setAttribute('aria-expanded','true');answer.style.maxHeight=inner.scrollHeight+'px'}
-  });
-  item.append(trigger,answer);panel.append(item);items.push({item,trigger,answer,inner});
-  if(i===0)answer.style.maxHeight=inner.scrollHeight+'px';
- });
- foreign(svg,804,7881,485,580,panel);requestAnimationFrame(()=>{const first=items.find(entry=>entry.item.classList.contains('is-open'));if(first)first.answer.style.maxHeight=first.inner.scrollHeight+'px'});
-}
+ $$('[data-faq-original]',svg).forEach(e=>e.style.display='none');const panel=H('div',{class:'faq-panel'});faqs.forEach(([q,a],i)=>{const d=H('details',i===0?{open:''}:{});d.append(H('summary',{},q),H('p',{},a));d.addEventListener('toggle',()=>{if(d.open)$$('details',panel).filter(x=>x!==d).forEach(x=>x.open=false)});panel.append(d)});foreign(svg,804,7881,485,580,panel);
  // Group the four original benefit cards, keeping all vector elements.
  const advantages=$('#Advantages',svg);
- if(advantages){let group=null;for(const el of [...advantages.children]){if(el.tagName.toLowerCase()==='g'&&el.querySelector('rect')){group=S('g',{class:'benefit-card'});advantages.insertBefore(group,el);el.querySelector('rect').classList.add('benefit-bg')}if(group)group.append(el)}for(const card of [...advantages.children].filter(e=>e.classList.contains('benefit-card'))){const bg=card.querySelector('.benefit-bg'),outer=S('g',{class:'benefit-hover-zone'});advantages.insertBefore(outer,card);outer.append(card);const area=S('rect',{x:bg.getAttribute('x'),y:bg.getAttribute('y'),width:bg.getAttribute('width'),height:bg.getAttribute('height'),rx:bg.getAttribute('rx'),fill:'transparent','pointer-events':'all','class':'benefit-hit-area'});outer.insertBefore(area,card);outer.style.pointerEvents='all';card.style.pointerEvents='none';}}
+ if(advantages){let group=null;for(const el of [...advantages.children]){if(el.tagName.toLowerCase()==='g'&&el.querySelector('rect')){group=S('g',{class:'benefit-card'});advantages.insertBefore(group,el);el.querySelector('rect').classList.add('benefit-bg')}if(group)group.append(el)}for(const card of [...advantages.children].filter(e=>e.classList.contains('benefit-card'))){const bg=card.querySelector('.benefit-bg'),outer=S('g',{class:'benefit-hover-zone'});advantages.insertBefore(outer,card);outer.append(card);const area=S('rect',{x:bg.getAttribute('x'),y:bg.getAttribute('y'),width:bg.getAttribute('width'),height:bg.getAttribute('height'),rx:bg.getAttribute('rx'),fill:'transparent','pointer-events':'all'});outer.insertBefore(area,card)}}
  // Home constructor: category selection uses the same catalog metadata as the full menu.
  const menu=$('#MenuConstructor',svg), menuCards=cards.filter(g=>g.dataset.kind==='Брускетты').sort((a,b)=>+a.dataset.y-+b.dataset.y||+a.dataset.x-+b.dataset.x);
  if(menu&&menuCards.length){const kinds=['Брускетты','Бургеры','Канапе','Бейглы','Нарезка','Аппетайзеры','Круассаны'];const slots=menuCards.map(g=>[+g.dataset.x,+g.dataset.y]);const original=$$('text',menu).filter(t=>kinds.includes(val(t))&&xy(t)[0]<350);original.forEach(t=>t.style.display='none');const originalPill=$$('rect',menu).find(r=>+r.getAttribute('x')===131&&+r.getAttribute('y')===4000);if(originalPill)originalPill.style.display='none';
@@ -126,23 +108,16 @@ if(location.hash&&page==='home')requestAnimationFrame(()=>document.getElementByI
 // Product details modal used by desktop SVG cards and the mobile catalog.
 const productModalShade=H('div',{class:'product-modal-backdrop',hidden:''});
 document.body.append(productModalShade);
-let productModalQty=1,productModalId=null,productModalReturnFocus=null,productModalCloseTimer=null;
+let productModalQty=1,productModalId=null,productModalReturnFocus=null;
 function closeProductModal(){
- if(productModalShade.hidden||productModalShade.classList.contains('is-closing'))return;
- productModalShade.classList.remove('is-open');
- productModalShade.classList.add('is-closing');
+ if(productModalShade.hidden)return;
+ productModalShade.hidden=true;
  document.body.classList.remove('product-modal-open');
- window.clearTimeout(productModalCloseTimer);
- productModalCloseTimer=window.setTimeout(()=>{
-  productModalShade.hidden=true;
-  productModalShade.classList.remove('is-closing');
-  productModalReturnFocus?.focus?.();
- },260);
+ productModalReturnFocus?.focus?.();
 }
 productModalShade.addEventListener('click',e=>{if(e.target===productModalShade)closeProductModal()});
 function showProductModal(id){
  const p=P[id];if(!p)return;
- window.clearTimeout(productModalCloseTimer);
  productModalId=id;productModalQty=p.min||1;productModalReturnFocus=document.activeElement;
  const card=cards.find(g=>g.dataset.card===id);
  const texts=card?$$('text',card).map(t=>t.textContent.replace(/\s+/g,' ').trim()).filter(Boolean):[];
@@ -184,13 +159,9 @@ function showProductModal(id){
  dialog.append(photo,info);
  productModalShade.replaceChildren(dialog);
  productModalShade.hidden=false;
- productModalShade.classList.remove('is-closing','is-open');
  document.body.classList.add('product-modal-open');
  updateQty();
- requestAnimationFrame(()=>{
-  productModalShade.classList.add('is-open');
-  cartButton.focus();
- });
+ requestAnimationFrame(()=>cartButton.focus());
 }
 document.addEventListener('keydown',e=>{if(!productModalShade.hidden&&e.key==='Escape')closeProductModal()});
 if(page==='constructor'){
