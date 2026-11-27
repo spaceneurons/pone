@@ -72,7 +72,42 @@ function wireRotation(groups,dots,next,prev,label){if(!groups.length)return;cons
 // FAQ accordion, single open entry. Other answers limited to facts from supplied mockups.
 if(page==='home'){
  const faqs=[['Какая сумма минимального заказа?','Минимальной суммы нет. Большинство позиций – от 5 порций, а часть закусок можно заказать от 1 порции: минимум показан в карточке. Точное количество в порции указано в карточке товара.'],['Сколько стоит доставка и где самовывоз?','Самовывоз: ул. Притыцкого 26. Стоимость доставки уточните у менеджера.'],['Как мне узнать состав блюд и КБЖУ?','Состав и характеристики указаны в карточке товара. За уточнениями обращайтесь к менеджеру.'],['Какие есть способы оплаты?','Доступные способы оплаты уточните у менеджера.'],['В каком виде приезжает заказ?','Фудбоксы упакованы в картонные боксы. В макете также указана герметичная эко-упаковка.']];
- $$('[data-faq-original]',svg).forEach(e=>e.style.display='none');const panel=H('div',{class:'faq-panel'});faqs.forEach(([q,a],i)=>{const d=H('details',i===0?{open:''}:{});d.append(H('summary',{},q),H('p',{},a));d.addEventListener('toggle',()=>{if(d.open)$$('details',panel).filter(x=>x!==d).forEach(x=>x.open=false)});panel.append(d)});foreign(svg,804,7881,485,580,panel);
+ $('[data-faq-original]',svg).forEach(e=>e.style.display='none');
+ const panel=H('div',{class:'faq-panel'}), faqAnimations=new WeakMap(), faqExpanded=new WeakMap();
+ function setFaqExpanded(d,expanded){
+  if(faqExpanded.get(d)===expanded)return;
+  faqExpanded.set(d,expanded);
+  // Use layout heights, not viewport coordinates: the desktop SVG may be scaled.
+  const start=d.offsetHeight, previous=faqAnimations.get(d);
+  if(previous){previous.onfinish=null;previous.cancel();faqAnimations.delete(d)}
+  d.open=expanded;
+  const end=d.offsetHeight;
+  if(reduceMotion()||typeof d.animate!=='function'||start===end){d.style.removeProperty('overflow');return}
+  d.open=true;
+  d.style.overflow='hidden';
+  const animation=d.animate([{height:start+'px'},{height:end+'px'}],{duration:360,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'});
+  faqAnimations.set(d,animation);
+  animation.onfinish=()=>{
+   if(faqAnimations.get(d)!==animation)return;
+   d.open=expanded;
+   animation.cancel();
+   faqAnimations.delete(d);
+   d.style.removeProperty('overflow');
+  };
+ }
+ faqs.forEach(([q,a],i)=>{
+  const d=H('details',i===0?{open:''}:{}), summary=H('summary',{},q);
+  faqExpanded.set(d,i===0);
+  d.append(summary,H('p',{},a));
+  summary.addEventListener('click',event=>{
+   event.preventDefault();
+   const expanded=!faqExpanded.get(d);
+   if(expanded)$('details',panel).filter(x=>x!==d).forEach(x=>setFaqExpanded(x,false));
+   setFaqExpanded(d,expanded);
+  });
+  panel.append(d);
+ });
+ foreign(svg,804,7881,485,580,panel);
  // Group the four original benefit cards, keeping all vector elements.
  const advantages=$('#Advantages',svg);
  if(advantages){let group=null;for(const el of [...advantages.children]){if(el.tagName.toLowerCase()==='g'&&el.querySelector('rect')){group=S('g',{class:'benefit-card'});advantages.insertBefore(group,el);el.querySelector('rect').classList.add('benefit-bg')}if(group)group.append(el)}for(const card of [...advantages.children].filter(e=>e.classList.contains('benefit-card'))){const bg=card.querySelector('.benefit-bg'),outer=S('g',{class:'benefit-hover-zone'});advantages.insertBefore(outer,card);outer.append(card);const area=S('rect',{x:bg.getAttribute('x'),y:bg.getAttribute('y'),width:bg.getAttribute('width'),height:bg.getAttribute('height'),rx:bg.getAttribute('rx'),fill:'transparent','pointer-events':'all'});outer.insertBefore(area,card)}}

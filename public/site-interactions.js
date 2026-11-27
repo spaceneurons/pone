@@ -56,6 +56,31 @@
     }, true);
   }
 
+  // Related boxes on product pages use their own catalog IDs; exclude the main template card.
+  if (page === 'product') {
+    const relatedSelector = 'svg[data-page="product"] [data-card]:not([data-card="festive"])';
+    svg.querySelectorAll(relatedSelector).forEach(card => {
+      const id = card.getAttribute('data-card');
+      if (!products[id] || products[id].kind !== 'Фудбоксы') return;
+      setCardAccess(card, 'link', 'Открыть ' + products[id].name);
+      card.addEventListener('keydown', event => {
+        if (event.target === card && event.key === 'Enter') {
+          event.preventDefault();
+          goToProduct(id);
+        }
+      });
+    });
+    document.addEventListener('click', event => {
+      const card = cardFrom(event.target, relatedSelector);
+      if (!card || isControl(event.target) || event.target.closest?.('.hit, a[href], button')) return;
+      const id = card.getAttribute('data-card');
+      if (!products[id] || products[id].kind !== 'Фудбоксы') return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      goToProduct(id);
+    }, true);
+  }
+
   // Ready boxes on the home page also open their own matching detail page.
   if (page === 'home') {
     const readySelector = 'svg[data-page="home"] #ReadyBoxes [data-card]';
