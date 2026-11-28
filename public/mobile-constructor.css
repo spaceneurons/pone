@@ -63,3 +63,16 @@
  .mobile-site[data-page="constructor"] .m-footer-col p:last-child{margin-top:calc(30 * var(--u))}
  .mobile-site[data-page="constructor"] .m-legal{padding:0 calc(10 * var(--u));font-size:calc(10 * var(--u));line-height:1.4}
 }
+
+/* Custom mobile sort popup: match the white floating list in the constructor reference. */
+@media(max-width:760px){
+ .mobile-site[data-page="constructor"] .m-custom-sort{z-index:60}
+ .mobile-site[data-page="constructor"] .m-sort-trigger{display:block;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .mobile-site[data-page="constructor"] .m-sort-trigger:hover{transform:none;box-shadow:none}
+ .mobile-site[data-page="constructor"] .m-custom-sort:after{transition:transform .18s ease}
+ .mobile-site[data-page="constructor"] .m-custom-sort.is-open:after{transform:rotate(225deg)}
+ .mobile-site[data-page="constructor"] .m-sort-options{position:absolute;right:-5%;top:calc(24 * var(--u));width:56%;min-width:calc(154 * var(--u));padding:0 0 calc(5 * var(--u));background:white;border:1px solid #ddd;border-radius:calc(11 * var(--u));box-shadow:0 2px 4px #0003;overflow:hidden;z-index:2}
+ .mobile-site[data-page="constructor"] .m-sort-options[hidden]{display:none}
+ .mobile-site[data-page="constructor"] .m-sort-option{display:block;width:100%;border:0;border-radius:0;background:white;color:#393939;text-align:left;padding:calc(4 * var(--u)) calc(25 * var(--u));min-height:calc(26 * var(--u));font-size:calc(14 * var(--u));font-weight:400;line-height:1.25;transform:none;box-shadow:none}
+ .mobile-site[data-page="constructor"] .m-sort-option.selected,.mobile-site[data-page="constructor"] .m-sort-option:hover,.mobile-site[data-page="constructor"] .m-sort-option:focus-visible{background:#e6e6e6;transform:none}
+}

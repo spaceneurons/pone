@@ -89,10 +89,40 @@ const catalogControls=(withKinds)=>{
   const hint=el('div','m-chip-hint','Листай  →');box.append(hint);
   const kindChips=chips(kinds,activeKind,v=>{activeKind=v;kindChips.querySelectorAll('button').forEach(b=>{const selected=b.textContent===v;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected))});refresh()});
   box.append(kindChips);
-  const filterRow=el('div','m-sort-row'),filter=el('select','m-select');
-  filter.setAttribute('aria-label','Сортировка по типу блюда');
-  [['Все','Сортировка: по умолчанию'],['Мясное','Мясные'],['Рыбное','Рыбные'],['Веган','Веган'],['Острое','Острые']].forEach(([value,label])=>{const o=el('option','',label);o.value=value;filter.append(o)});
-  filter.value=activeTag;filter.addEventListener('change',()=>{activeTag=filter.value;refresh()});filterRow.append(filter);box.append(filterRow);
+  const filterRow=el('div','m-sort-row m-custom-sort');
+  const options=[['Все','Все'],['Мясное','Мясные'],['Рыбное','Рыбные'],['Веган','Веган'],['Острое','Острые']];
+  const currentLabel=()=>activeTag==='Все'?'Сортировка: по умолчанию':options.find(([value])=>value===activeTag)?.[1]||'Сортировка: по умолчанию';
+  const trigger=btn(currentLabel(),()=>setOpen(menu.hidden),'m-select m-sort-trigger');
+  trigger.setAttribute('aria-label','Сортировка по типу блюда: '+currentLabel());
+  trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-controls','m-food-sort-options');
+  const menu=el('div','m-sort-options');menu.id='m-food-sort-options';menu.hidden=true;
+  const optionButtons=[];
+  function setOpen(open,restoreFocus=false){
+   menu.hidden=!open;trigger.setAttribute('aria-expanded',String(open));filterRow.classList.toggle('is-open',open);
+   if(restoreFocus)trigger.focus();
+  }
+  options.forEach(([value,label])=>{
+   const option=btn(label,()=>{
+    activeTag=value;trigger.textContent=currentLabel();trigger.setAttribute('aria-label','Сортировка по типу блюда: '+currentLabel());
+    optionButtons.forEach(([v,b])=>{b.classList.toggle('selected',v===value);b.setAttribute('aria-pressed',String(v===value))});
+    setOpen(false,true);refresh();
+   },'m-sort-option');
+   option.classList.toggle('selected',activeTag===value);option.setAttribute('aria-pressed',String(activeTag===value));
+   optionButtons.push([value,option]);menu.append(option);
+  });
+  filterRow.append(trigger,menu);box.append(filterRow);
+  document.addEventListener('pointerdown',event=>{if(!menu.hidden&&!filterRow.contains(event.target))setOpen(false)});
+  filterRow.addEventListener('focusout',event=>{if(!menu.hidden&&event.relatedTarget&&!filterRow.contains(event.relatedTarget))setOpen(false)});
+  filterRow.addEventListener('keydown',event=>{
+   if(event.key==='Escape'&&!menu.hidden){event.preventDefault();setOpen(false,true);return}
+   if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
+   event.preventDefault();
+   if(menu.hidden)setOpen(true);
+   const current=optionButtons.findIndex(([,b])=>b===document.activeElement);
+   const selected=optionButtons.findIndex(([v])=>v===activeTag);
+   const next=current<0?Math.max(0,selected):(current+(event.key==='ArrowDown'?1:-1)+optionButtons.length)%optionButtons.length;
+   optionButtons[next][1].focus();
+  });
   const searchWrap=el('label','m-search-wrap'),icon=el('span','m-search-icon');icon.innerHTML=searchIcon;
   const search=el('input','m-search');search.type='search';search.placeholder='Поиск по названию';search.setAttribute('aria-label','Поиск по названию');search.value=query;search.addEventListener('input',()=>{query=search.value;refresh()});searchWrap.append(icon,search);box.append(searchWrap);
   return box;
