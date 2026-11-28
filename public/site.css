@@ -342,3 +342,15 @@ summary:focus,summary:focus-visible,
     cursor: pointer;
   }
 }
+
+/* Home menu-constructor: prevent selection of neighboring dish labels on rapid quantity clicks. */
+@media (min-width: 761px) {
+  svg.design[data-page="home"] #MenuConstructor [data-card],
+  svg.design[data-page="home"] #MenuConstructor [data-card] text,
+  svg.design[data-page="home"] #MenuConstructor [data-card] tspan,
+  svg.design[data-page="home"] #MenuConstructor [data-card] .click-target {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+}
