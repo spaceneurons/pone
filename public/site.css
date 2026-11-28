@@ -321,3 +321,12 @@ summary:focus,summary:focus-visible,
 @media (min-width: 761px) and (prefers-reduced-motion: reduce) {
   #ReadyBoxes > [data-card].carousel-slide { transition: none; }
 }
+
+/* Hero artwork is masked visually, but SVG masks do not clip pointer hit testing.
+   Its rotated image extends over the first benefit card; keep artwork non-interactive. */
+@media (min-width: 761px) {
+  svg.design[data-page="home"] #Hero > g[mask],
+  svg.design[data-page="home"] #Hero > g[mask] * {
+    pointer-events: none;
+  }
+}
