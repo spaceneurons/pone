@@ -354,3 +354,15 @@ summary:focus,summary:focus-visible,
     cursor: pointer;
   }
 }
+
+/* Related food boxes: prevent neighboring SVG titles from being selected on quantity clicks. */
+@media (min-width: 761px) {
+  svg.design[data-page="product"] [data-card]:not([data-card="festive"]),
+  svg.design[data-page="product"] [data-card]:not([data-card="festive"]) text,
+  svg.design[data-page="product"] [data-card]:not([data-card="festive"]) tspan,
+  svg.design[data-page="product"] [data-card]:not([data-card="festive"]) .click-target {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+}
