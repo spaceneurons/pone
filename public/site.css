@@ -298,3 +298,15 @@ summary:focus,summary:focus-visible,
     line-height: 1;
   }
 }
+
+/* Catalog cards act as links and contain quantity/cart controls: prevent accidental SVG text selection. */
+@media (min-width: 761px) {
+  svg.design[data-page="boxes"] [data-card],
+  svg.design[data-page="boxes"] [data-card] text,
+  svg.design[data-page="boxes"] [data-card] tspan,
+  svg.design[data-page="boxes"] [data-card] .click-target {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+}
