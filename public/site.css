@@ -330,3 +330,15 @@ summary:focus,summary:focus-visible,
     pointer-events: none;
   }
 }
+
+/* Home ready-box carousel: prevent accidental text selection on repeated cart clicks. */
+@media (min-width: 761px) {
+  svg.design[data-page="home"] #ReadyBoxes [data-card],
+  svg.design[data-page="home"] #ReadyBoxes [data-card] text,
+  svg.design[data-page="home"] #ReadyBoxes [data-card] tspan,
+  svg.design[data-page="home"] #ReadyBoxes [data-card] .click-target {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+}
