@@ -61,7 +61,7 @@
         ], 68);
       }
 
-      const sectionIds = ['Header', 'Hero', 'Advantages', 'Solutions', 'ReadyBoxes', 'Reasons', 'Reviews', 'ReadyBoxesPagination', 'FAQ', 'Gallery', 'Partners', 'RequestForm', 'Footer'];
+      const sectionIds = ['Header', 'Hero', 'Advantages', 'Solutions', 'ReadyBoxes', 'Reasons', 'Reviews', 'ReadyBoxesPagination', 'FAQ', 'Gallery', 'Partners', 'RequestForm'];
       sectionIds.forEach(id => {
         const section = svg.querySelector('#' + id);
         if (!section) return;
