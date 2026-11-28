@@ -2,11 +2,13 @@
 const svg=document.querySelector('svg[data-page]'),P=window.PONE_PRODUCTS,UI=window.PONE_UI;
 if(!svg||!P||!UI)return;
 const page=svg.dataset.page;
-const root=document.createElement('div');root.className='mobile-site';root.setAttribute('aria-label','Мобильная версия сайта');
+const root=document.createElement('div');root.className='mobile-site';root.dataset.page=page;root.setAttribute('aria-label','Мобильная версия сайта');
 root.addEventListener('click',e=>{const card=e.target.closest?.('.m-card[data-product][role="button"]');if(!card||e.target.closest?.('button'))return;UI.showProductModal(card.dataset.product)});
 const $=(s,p=root)=>p.querySelector(s),$$=(s,p=root)=>[...p.querySelectorAll(s)];
 const el=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const btn=(txt,fn,cls)=>{const b=el('button',cls||'',txt);b.type='button';b.addEventListener('click',fn);return b};
+const cartIcon='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h3l2.2 12.2a1.5 1.5 0 0 0 1.5 1.2h10.1a1.5 1.5 0 0 0 1.5-1.2L22 7H6"/><circle cx="9" cy="21" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="21" r="1" fill="currentColor" stroke="none"/></svg>';
+const searchIcon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>';
 const money=n=>Number(n).toLocaleString('ru-RU')+' Br';
 const all=Object.entries(P).map(([id,p])=>({id,...p}));
 const foods=all.filter(p=>p.kind!=='Фудбоксы'),boxes=all.filter(p=>p.kind==='Фудбоксы');
@@ -15,11 +17,11 @@ const tags=['Все','Мясное','Рыбное','Веган','Острое','
 let cartMenu=false,activeKind='Все',activeTag='Все',query='',sort='default',slideIndexes={};
 const makeHeader=()=>{
  const h=el('header','m-header'),brand=el('a','m-brand','Вкусный След');brand.href='index.html';
- const right=el('div','m-header-actions'),cart=btn('🛒',()=>UI.showCart(),'m-cart');cart.setAttribute('aria-label','Открыть корзину');cart.innerHTML='<span class="m-cart-icon" aria-hidden="true">🛒</span><b class="m-cart-count">'+UI.count()+'</b>';
+ const right=el('div','m-header-actions'),cart=btn('',()=>UI.showCart(),'m-cart');cart.setAttribute('aria-label','Открыть корзину');cart.innerHTML='<span class="m-cart-icon" aria-hidden="true">'+cartIcon+'</span><b class="m-cart-count">'+UI.count()+'</b>';
  const burger=btn('☰',()=>{cartMenu=!cartMenu;const nav=$('.m-nav');nav.hidden=!cartMenu;burger.setAttribute('aria-expanded',String(cartMenu))},'m-burger');burger.setAttribute('aria-label','Открыть меню');burger.setAttribute('aria-expanded','false');
  right.append(cart,burger);h.append(brand,right);
  const nav=el('nav','m-nav');nav.hidden=true;
- [['Меню','constructor.html'],['Готовые наборы','boxes.html'],['Партнерам','index.html#partners'],['Доставка и оплата','index.html#faq'],['Контакты','index.html#contacts']].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
+ [['Меню-конструктор','constructor.html'],['Готовые наборы','boxes.html'],['Партнерам','index.html#partners'],['Доставка и оплата','index.html#faq'],['Контакты','index.html#contacts']].forEach(([t,u])=>{const a=el('a','',t);a.href=u;nav.append(a)});
  root.append(h,nav);
 };
 const makeFooter=()=>{
@@ -29,9 +31,36 @@ const makeFooter=()=>{
  f.append(logo,contact,legal);root.append(f);
 };
 const section=(title,sub)=>{const s=el('section','m-section');if(title)s.append(el('h2','m-section-title',title));if(sub)s.append(el('p','m-section-sub',sub));return s};
+const constructorQuantities=new Map();
+const foodDetails=new Map();
+if(page==='constructor'){
+ for(const source of svg.querySelectorAll('[data-card]')){
+  const id=source.dataset.card;if(foodDetails.has(id))continue;
+  const texts=Array.from(source.querySelectorAll('text'),t=>Array.from(t.querySelectorAll('tspan'),v=>v.textContent.trim()).join(' ')||t.textContent.trim());
+  foodDetails.set(id,{weight:texts.find(t=>/^\d+(?:[.,]\d+)?\s*г$/i.test(t))||'',description:texts.find(t=>t.startsWith('Багет,'))||''});
+ }
+}
 const card=(p,mode='food')=>{
  const c=el('article','m-card'),im=el('img','m-card-image');c.dataset.product=p.id;im.src=p.image;im.alt=p.name;im.loading='lazy';im.decoding='async';im.style.cursor='pointer';
  const body=el('div','m-card-body');
+ if(page==='constructor'&&mode==='food'){
+  const photo=el('div','m-food-photo');photo.append(im);
+  if(p.tag)photo.append(el('span','m-tag',p.tag));
+  const details=foodDetails.get(p.id)||{};
+  const title=el('h3','m-card-name',p.name);
+  const description=el('p','m-food-description',details.description||'Состав уточняйте у менеджера');
+  const meta=el('div','m-food-meta');meta.append(el('strong','',money(p.price)),el('span','',details.weight||''));
+  const controls=el('div','m-card-controls'),q=el('output','m-qty',String(constructorQuantities.get(p.id)||p.min||1));
+  q.setAttribute('aria-live','polite');
+  const step=d=>{const n=Math.min(999,Math.max(p.min||1,Number(q.textContent)+d));q.textContent=String(n);constructorQuantities.set(p.id,n)};
+  const minus=btn('−',()=>step(-1),'m-qty-btn'),plus=btn('+',()=>step(1),'m-qty-btn');
+  minus.setAttribute('aria-label','Уменьшить количество: '+p.name);plus.setAttribute('aria-label','Увеличить количество: '+p.name);
+  const add=btn('',()=>UI.add(p.id,Number(q.textContent)),'m-add');add.innerHTML=cartIcon;add.setAttribute('aria-label','В корзину: '+p.name);
+  controls.append(minus,q,plus,add);body.append(title,description,meta,controls);c.append(photo,body);
+  c.setAttribute('role','button');c.setAttribute('tabindex','0');c.setAttribute('aria-label','Подробнее: '+p.name);
+  c.addEventListener('keydown',e=>{if(e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();UI.showProductModal(p.id)}});
+  return c;
+ }
  if(p.tag)body.append(el('span','m-tag',p.tag));
  const title=el('h3','m-card-name',p.name);title.style.cursor='pointer';body.append(title,el('p','m-card-meta',(p.min>1?'От '+p.min+' шт.':'От 1 шт.')+' · '+money(p.price)));
  const controls=el('div','m-card-controls'),q=el('span','m-qty',''+p.min);
@@ -56,7 +85,18 @@ const filtered=()=>{
 const chips=(items,active,fn)=>{const wrap=el('div','m-chips');items.forEach(v=>{const b=btn(v,()=>fn(v),v===active?'m-chip active':'m-chip');b.setAttribute('aria-pressed',String(v===active));wrap.append(b)});return wrap};
 const catalogControls=(withKinds)=>{
  const box=el('div','m-catalog-controls');
- if(withKinds)box.append(chips(kinds,activeKind,v=>{activeKind=v;refresh()}));
+ if(withKinds){
+  const hint=el('div','m-chip-hint','Листай  →');box.append(hint);
+  const kindChips=chips(kinds,activeKind,v=>{activeKind=v;kindChips.querySelectorAll('button').forEach(b=>{const selected=b.textContent===v;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected))});refresh()});
+  box.append(kindChips);
+  const filterRow=el('div','m-sort-row'),filter=el('select','m-select');
+  filter.setAttribute('aria-label','Сортировка по типу блюда');
+  [['Все','Сортировка: по умолчанию'],['Мясное','Мясные'],['Рыбное','Рыбные'],['Веган','Веган'],['Острое','Острые']].forEach(([value,label])=>{const o=el('option','',label);o.value=value;filter.append(o)});
+  filter.value=activeTag;filter.addEventListener('change',()=>{activeTag=filter.value;refresh()});filterRow.append(filter);box.append(filterRow);
+  const searchWrap=el('label','m-search-wrap'),icon=el('span','m-search-icon');icon.innerHTML=searchIcon;
+  const search=el('input','m-search');search.type='search';search.placeholder='Поиск по названию';search.setAttribute('aria-label','Поиск по названию');search.value=query;search.addEventListener('input',()=>{query=search.value;refresh()});searchWrap.append(icon,search);box.append(searchWrap);
+  return box;
+ }
  const sortRow=el('div','m-sort-row'),sel=el('select','m-select');[['default','Сортировка: по умолчанию'],['cheap','Сначала дешевле'],['expensive','Сначала дороже'],['name','По названию']].forEach(([v,t])=>{const o=el('option','',t);o.value=v;sel.append(o)});sel.value=sort;sel.addEventListener('change',()=>{sort=sel.value;refresh()});sortRow.append(sel);
  const tag=el('select','m-select');tags.concat(['До 3 Br']).forEach(v=>{const o=el('option','',v==='Все'?'Все типы':v);o.value=v;tag.append(o)});tag.value=activeTag;tag.addEventListener('change',()=>{activeTag=tag.value;refresh()});
  sortRow.append(tag);box.append(sortRow);
@@ -68,7 +108,12 @@ function refresh(){if(!listNode)return;const items=filtered();listNode.replaceCh
 const makeBack=()=>{const a=el('a','m-back','←  Назад');a.href=page==='product'?'boxes.html':'index.html';root.append(a)};
 const makeFormSection=()=>{
  const s=el('section','m-request-section');s.append(el('h2','','Оставить заявку'),el('p','','Наш менеджер свяжется с вами и поможет с оформлением и подбором заказа в самое ближайшее время.'));
- const f=UI.makeForm('request');f.classList.add('m-request-form');s.append(f);return s;
+ const f=UI.makeForm('request');f.classList.add('m-request-form');
+ if(page==='constructor'){
+  for(const field of f.querySelectorAll('input[required]:not([type="checkbox"])')){
+   const wrap=el('div','m-required-field');field.parentNode.insertBefore(wrap,field);wrap.append(field,el('span','m-required-mark','*'));field.placeholder=field.placeholder.replace(/\s*\*\s*$/,'');
+  }
+ }s.append(f);return s;
 };
 const makeProductSection=(p)=>{const c=el('article','m-product-card'),im=el('img','m-product-image');im.src=p.image;im.alt=p.name;im.loading='eager';im.decoding='async';c.append(im);const info=el('div','m-product-info');info.append(el('div','m-product-heading',p.name),el('p','m-product-price',money(p.price)),el('p','', 'Категория: '+(p.tags||[p.tag]).join(', ')+'\nМинимум: '+(p.min||1)+' шт.'));
  if(p.id==='festive'){info.append(el('p','','Вес: 720 г\nВес упаковки: 750 г\nУпаковка: картонный бокс\nПорция: 35 шт.'),el('h3','','Состав:'));const composition=el('ul','m-composition');['Канапе с ветчиной и мягким сыром','Тартин с фуа-гра и вишнёвым компоте','Боссче с лососем','Боссче с цыплёнком карри','Канапе с вяленым черри и салями'].forEach(t=>composition.append(el('li','',t)));info.append(composition)}else info.append(el('p','','Подробный состав и характеристики уточняйте у менеджера.'));
@@ -87,10 +132,10 @@ if(page==='home'){
  const reviews=section('Отзывы','');const reviewTrack=el('div','m-review-track');['Всё очень вкусно, красиво оформлено и доставлено вовремя!','Отличный выбор закусок для мероприятия.','Спасибо за оперативную работу и качество!'].forEach((t,i)=>{const r=el('article','m-review',t);r.append(el('b','','★★★★★'));reviewTrack.append(r)});const reviewControls=el('div','m-slider-controls'),rPrev=btn('‹',()=>reviewTrack.scrollBy({left:-reviewTrack.clientWidth*.85,behavior:'smooth'}),'m-arrow'),rNext=btn('›',()=>reviewTrack.scrollBy({left:reviewTrack.clientWidth*.85,behavior:'smooth'}),'m-arrow'),rDots=el('div','m-dots');[...reviewTrack.children].forEach((r,i)=>{const d=btn(' ',()=>r.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),'m-dot');if(i===0)d.classList.add('active');rDots.append(d)});reviewTrack.addEventListener('scroll',()=>{const idx=Math.round(reviewTrack.scrollLeft/Math.max(1,reviewTrack.children[0]?.offsetWidth+12));$('.m-dot',rDots).forEach((d,i)=>d.classList.toggle('active',i===idx))},{passive:true});reviewControls.append(rPrev,rDots,rNext);reviews.append(reviewTrack,reviewControls);root.append(reviews);
  const faq=section('Часто задаваемые вопросы','');faq.id='faq';const qa=[['Какая сумма минимального заказа?','Минимальной суммы нет. Большинство позиций – от 5 порций, а часть закусок можно заказать от 1 порции: минимум показан в карточке. Точное количество в порции указано в карточке товара.'],['Сколько стоит доставка и где самовывоз?','Самовывоз: ул. Притыцкого 26. Стоимость доставки уточните у менеджера.'],['Как мне узнать состав блюд и КБЖУ?','Состав и характеристики указаны в карточке товара.'],['Какие есть способы оплаты?','Доступные способы оплаты уточните у менеджера.'],['В каком виде приезжает заказ?','Фудбоксы упакованы в картонные боксы.']];const panel=el('div','m-faq');qa.forEach(([q,a],i)=>{const d=el('details','m-faq-item');if(i===0)d.open=true;d.append(el('summary','',q),el('p','',a));d.addEventListener('toggle',()=>{if(d.open)$$('details',panel).forEach(x=>{if(x!==d)x.open=false})});panel.append(d)});faq.append(panel);root.append(faq);
 }else if(page==='boxes'||page==='constructor'){
- const title=section(page==='boxes'?'Готовые фудбоксы':'Меню-конструктор',page==='boxes'?'Ничего не нужно придумывать: в боксе уже всё есть.':'На нашли подходящий фудбокс? Соберите самостоятельно!');title.classList.add('m-page-title');root.append(title);
+ const title=section(page==='boxes'?'Готовые фудбоксы':'Меню-конструктор',page==='boxes'?'Ничего не нужно придумывать: в боксе уже всё есть.':'Не нашли подходящий фудбокс? Соберите самостоятельно!');title.classList.add('m-page-title');root.append(title);
  const controls=catalogControls(page==='constructor');root.append(controls);
  listNode=el('div','m-grid m-catalog-grid');emptyNode=el('p','m-empty','По этим параметрам ничего не найдено');emptyNode.hidden=true;root.append(listNode,emptyNode);refresh();
- if(page==='constructor'){const jump=el('div','m-jump');jump.append(btn('↑  Начало меню',()=>window.scrollTo({top:0,behavior:'smooth'}),'m-jump-btn'),btn('↓  Конец меню',()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),'m-jump-btn'));root.append(jump)}
+ if(page==='constructor'){const jump=el('div','m-jump');jump.append(btn('↑  Начало меню',()=>window.scrollTo({top:0,behavior:'smooth'}),'m-jump-btn'),btn('↓  Конец меню',()=>$('.m-request-section')?.scrollIntoView({behavior:'smooth',block:'start'}),'m-jump-btn'));root.append(jump)}
  root.append(makeFormSection());
 }else if(page==='product'){
  const productId=new URLSearchParams(location.search).get('id')||'festive';const source=P[productId]||P.festive;const p={id:productId,...source};const title=section();title.append(el('h1','',p.name));root.append(title,makeProductSection(p),makeSlider('С этим товаром также покупают',boxes.filter(x=>x.id!==p.id).slice(0,6)));
