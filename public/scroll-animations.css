@@ -2,10 +2,10 @@
 @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
   .site-scroll-reveal {
     opacity: 0;
-    translate: 0 20px;
+    translate: 0 12px;
     transition:
-      opacity 720ms cubic-bezier(.22,.61,.36,1),
-      translate 720ms cubic-bezier(.22,.61,.36,1);
+      opacity 380ms cubic-bezier(.22,.61,.36,1),
+      translate 380ms cubic-bezier(.22,.61,.36,1);
     transition-delay: var(--scroll-delay, 0ms);
   }
   .site-scroll-reveal.is-visible {

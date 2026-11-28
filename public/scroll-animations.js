@@ -18,8 +18,7 @@
         }, { threshold: 0.035, rootMargin: '0px 0px -7% 0px' })
       : null;
 
-    const reveal = (nodes, step = 65) => {
-      let index = 0;
+    const reveal = (nodes) => {
       nodes.filter(Boolean).forEach(node => {
         // Button labels must be visible together with their backgrounds.
         if (node.tagName.toLowerCase() === 'text') {
@@ -33,7 +32,7 @@
         if (node.dataset.scrollRevealReady) return;
         node.dataset.scrollRevealReady = '1';
         node.classList.add('site-scroll-reveal');
-        node.style.setProperty('--scroll-delay', Math.min(index++, 10) * step + 'ms');
+        node.style.setProperty('--scroll-delay', '0ms');
         if (observer) observer.observe(node);
         else node.classList.add('is-visible');
       });
@@ -67,7 +66,7 @@
           ...cards,
           ctaRect,
           findText('Смотреть все позиции')
-        ], 68);
+        ]);
       }
 
       const sectionIds = ['Header', 'Hero', 'Advantages', 'Solutions', 'ReadyBoxes', 'Reasons', 'Reviews', 'ReadyBoxesPagination', 'FAQ', 'Gallery', 'Partners', 'RequestForm'];
@@ -85,7 +84,7 @@
             node.hasAttribute('data-faq-original') ||
             tag === 'image';
         });
-        reveal(nodes, id === 'FAQ' ? 42 : 58);
+        reveal(nodes);
       });
 
       // Start once when the section enters view; time, not scroll position, drives drawing.
@@ -122,17 +121,17 @@
         }
       }
     } else {
-      // Other desktop pages: reveal catalog cards in a gentle stagger.
+      // Other desktop pages: use the same reveal timing as the home page.
       const cards = Array.from(svg.querySelectorAll('[data-card]')).sort((a, b) => {
         const ay = Number(a.getAttribute('data-y') || 0), by = Number(b.getAttribute('data-y') || 0);
         return ay - by || Number(a.getAttribute('data-x') || 0) - Number(b.getAttribute('data-x') || 0);
       });
-      reveal(cards, 72);
+      reveal(cards);
       const headings = Array.from(svg.querySelectorAll('text')).filter(node => {
         const value = normalize(node.textContent);
         return value.length > 5 && value.length < 90 && /^(Меню|Готовые наборы|Фудбоксы|Конструктор|Состав|Оформить заказ)/i.test(value);
       });
-      reveal(headings, 85);
+      reveal(headings);
     }
   } catch (error) {
     // Animation failures must never interrupt cart, navigation, or other site controls.
