@@ -180,6 +180,7 @@
       clone.querySelectorAll('a').forEach(node => node.remove());
       fixedSvg.append(clone);
 
+      const navItems = [];
       const addLink = (x, y, width, height, href, label) => {
         const anchor = document.createElementNS(NS, 'a');
         anchor.setAttribute('href', href);
@@ -202,18 +203,7 @@
             pill.setAttribute('opacity', '0');
             pill.setAttribute('pointer-events', 'none');
             anchor.append(pill);
-            const fit = () => {
-              try {
-                const bounds = text.getBBox();
-                if (!bounds.width || !bounds.height) return;
-                pill.setAttribute('x', bounds.x - 11);
-                pill.setAttribute('y', bounds.y + bounds.height / 2 - 17);
-                pill.setAttribute('width', bounds.width + 22);
-                pill.setAttribute('height', '34');
-              } catch (_) { /* A decoration must never interrupt navigation. */ }
-            };
-            requestAnimationFrame(fit);
-            if (document.fonts) document.fonts.ready.then(fit, () => {});
+            navItems.push({text, rect, pill});
           }
         }
         fixedSvg.append(anchor);
@@ -252,6 +242,36 @@
       fixedSvg.append(cartHit);
       shell.append(fixedSvg);
       document.body.append(shell);
+
+      // Equal visual gaps between the five labels; move their hit areas and pills together.
+      const layoutNavigation = () => {
+        try {
+          if (navItems.length !== 5) return;
+          const boxes = navItems.map(item => item.text.getBBox());
+          if (boxes.some(b => !Number.isFinite(b.width) || b.width <= 0)) return;
+          const left = 265, right = 929;
+          const gap = (right - left - boxes.reduce((sum, b) => sum + b.width, 0)) / 4;
+          if (!Number.isFinite(gap) || gap < 22) return;
+          let x = left;
+          navItems.forEach((item, index) => {
+            const b = boxes[index];
+            const span = item.text.querySelector('tspan');
+            if (!span) return;
+            const oldX = Number(span.getAttribute('x'));
+            span.setAttribute('x', String(oldX + x - b.x));
+            item.rect.setAttribute('x', String(x - 11));
+            item.rect.setAttribute('width', String(b.width + 22));
+            item.pill.setAttribute('x', String(x - 11));
+            item.pill.setAttribute('y', String(b.y + b.height / 2 - 17));
+            item.pill.setAttribute('width', String(b.width + 22));
+            item.pill.setAttribute('height', '34');
+            x += b.width + gap;
+          });
+        } catch (_) { /* Layout must never interrupt navigation. */ }
+      };
+      requestAnimationFrame(layoutNavigation);
+      if (document.fonts) document.fonts.ready.then(layoutNavigation, () => {});
+      window.addEventListener('resize', layoutNavigation, {passive:true});
     } else {
       const bar = document.createElement('div');
       bar.className = 'sticky-html-header';
