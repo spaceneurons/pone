@@ -281,3 +281,20 @@ summary:focus,summary:focus-visible,
     transition: none !important;
   }
 }
+
+/* Desktop catalog tag filters: reserve real space for longer labels. */
+@media (min-width: 761px) {
+  .filter-bar[data-filter-group="tag"] {
+    box-sizing: border-box;
+    padding: 0 4px;
+    gap: 4px;
+  }
+  .filter-bar[data-filter-group="tag"] button {
+    box-sizing: border-box;
+    flex: 1 0 auto;
+    min-width: max-content;
+    padding: 0 8px;
+    font-size: 14px;
+    line-height: 1;
+  }
+}

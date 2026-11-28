@@ -79,32 +79,38 @@
         reveal(nodes, id === 'FAQ' ? 42 : 58);
       });
 
-      // Draw the orange path in "Почему выбирают нас?" in sync with page scrolling.
+      // Start once when the section enters view; time, not scroll position, drives drawing.
       const reasons = svg.querySelector('#Reasons');
       const line = reasons && Array.from(reasons.children).find(node =>
         node.tagName.toLowerCase() === 'path' &&
         node.getAttribute('stroke')?.toUpperCase() === '#FF5800'
       );
-      if (line && reasons && typeof line.getTotalLength === 'function') {
+      if (line && typeof line.getTotalLength === 'function') {
         const length = line.getTotalLength();
-        line.style.strokeDasharray = length + ' ' + length;
-        line.style.strokeDashoffset = String(length);
-        let queued = false;
-        const draw = () => {
-          queued = false;
-          const rect = reasons.getBoundingClientRect();
-          const height = window.innerHeight || document.documentElement.clientHeight;
-          const progress = Math.max(0, Math.min(1, (height * 0.82 - rect.top) / (rect.height + height * 0.64)));
-          line.style.strokeDashoffset = String(length * (1 - progress));
-        };
-        const onScroll = () => {
-          if (queued) return;
-          queued = true;
-          window.requestAnimationFrame(draw);
-        };
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll, { passive: true });
-        draw();
+        if (length > 0 && typeof line.animate === 'function') {
+          line.style.strokeDasharray = length + ' ' + length;
+          line.style.strokeDashoffset = String(length);
+          let started = false;
+          const draw = () => {
+            if (started) return;
+            started = true;
+            try {
+              line.animate([{strokeDashoffset: String(length)}, {strokeDashoffset: '0'}],
+                {duration: 2000, easing: 'ease-in-out'});
+            } finally {
+              line.style.strokeDashoffset = '0';
+            }
+          };
+          if ('IntersectionObserver' in window) {
+            const lineObserver = new IntersectionObserver(entries => {
+              if (entries.some(entry => entry.isIntersecting)) {
+                lineObserver.disconnect();
+                draw();
+              }
+            }, {threshold: 0.05});
+            lineObserver.observe(reasons);
+          } else draw();
+        }
       }
     } else {
       // Other desktop pages: reveal catalog cards in a gentle stagger.
