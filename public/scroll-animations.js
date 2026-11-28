@@ -21,6 +21,15 @@
     const reveal = (nodes, step = 65) => {
       let index = 0;
       nodes.filter(Boolean).forEach(node => {
+        // Button labels must be visible together with their backgrounds.
+        if (node.tagName.toLowerCase() === 'text') {
+          const label = node.textContent.replace(/\s+/g, ' ').trim();
+          const solutionLabel = node.hasAttribute('data-solution-card') &&
+            Array.from(node.querySelectorAll('tspan')).some(span => Math.abs(Number(span.getAttribute('y')) - 1677.32) < 1);
+          const buttonLabel = /^(Смотреть\s|Собрать\s|Все позиции|Отправить$|Позвонить нам$|Корзина\s*\(|Оформить заказ$|На главную$|В корзину$|Добавить в корзину$|Фильтр$)/i.test(label);
+          const requestButton = label === 'Оставить заявку' && Number(node.getAttribute('font-size')) < 30;
+          if (solutionLabel || buttonLabel || requestButton) return;
+        }
         if (node.dataset.scrollRevealReady) return;
         node.dataset.scrollRevealReady = '1';
         node.classList.add('site-scroll-reveal');
